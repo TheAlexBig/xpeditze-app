@@ -33,7 +33,7 @@ class LicenseServiceTests {
         keyPair = generator.generateKeyPair();
         directories = new ApplicationDirectories(
                 temporaryDirectory.resolve("data").toString(),
-                temporaryDirectory.resolve("Central Docs/Documents").toString());
+                temporaryDirectory.resolve("Xpeditze/Documents").toString());
         directories.initialize();
         MachineCodeProvider machineCodeProvider = new MachineCodeProvider() {
             @Override

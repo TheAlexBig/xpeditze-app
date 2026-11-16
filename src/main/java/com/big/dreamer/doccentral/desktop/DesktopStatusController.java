@@ -11,6 +11,6 @@ public class DesktopStatusController {
 
     @GetMapping(value = "/status", produces = MediaType.TEXT_PLAIN_VALUE)
     public String status() {
-        return "central-docs";
+        return "xpeditze";
     }
 }

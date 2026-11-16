@@ -84,7 +84,7 @@ public class StorageBackupService {
     }
 
     private void validateManifest(byte[] manifest) throws IOException {
-        if (manifest == null) throw new StorageBackupException("El archivo no es un respaldo de Central Docs.");
+        if (manifest == null) throw new StorageBackupException("El archivo no es un respaldo de Xpeditze.");
         Map<?, ?> values = objectMapper.readValue(manifest, Map.class);
         if (!"central-docs-backup".equals(values.get("format"))) {
             throw new StorageBackupException("El formato del respaldo no es compatible.");

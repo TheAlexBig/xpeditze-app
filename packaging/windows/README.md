@@ -34,8 +34,8 @@ Authenticate once before using it:
 gh auth login --hostname github.com
 ```
 
-The default remote repositories are `TheAlexBig/doc-central-app` and
-`TheAlexBig/doc-central-forms`; both are checked out by the Windows workflow.
+The default remote repositories are `TheAlexBig/xpeditze-app` and
+`TheAlexBig/xpeditze-forms`; both are checked out by the Windows workflow.
 
 ## Build Provenance
 
@@ -50,8 +50,8 @@ prints the verification command after downloading the MSI. An installer can
 also be verified directly:
 
 ```bash
-gh attestation verify path/to/CentralDocs-1.0.0.msi \
-  --repo TheAlexBig/doc-central-app
+gh attestation verify path/to/Xpeditze-1.0.0.msi \
+  --repo TheAlexBig/xpeditze-app
 ```
 
 Artifact attestations establish build provenance; they do not Authenticode
@@ -63,7 +63,7 @@ display `Unknown publisher` when an attested MSI is launched.
 By default, a successful workflow run creates the immutable tag
 `v<version>` and publishes a GitHub Release containing:
 
-- `Central.Docs-<version>.msi`;
+- `Xpeditze-<version>.msi`;
 - `SHA256SUMS.txt` generated from that exact MSI;
 - release notes containing the backend revision, frontend revision, and
   GitHub Actions run ID.
@@ -89,15 +89,16 @@ when publishing a corresponding application release.
 
 The build performs these steps:
 
-1. Builds the React production application from `doc-central-forms`.
+1. Builds the React production application from `xpeditze-forms`.
 2. Packages that `dist` output inside the Spring Boot jar with the `desktop`
    Maven profile.
-3. Generates the Central Docs Windows icon and builds an MSI installer through
+3. Generates the Xpeditze Windows icon and builds an MSI installer through
    `jpackage`.
 
 The resulting MSI is written beneath `target\installer`. It includes its Java
 runtime, creates Start Menu and desktop shortcuts, and uses a stable upgrade
 UUID so later installer versions can replace earlier ones cleanly. During an
-upgrade, the MSI asks the running `Central Docs.exe` process to close, waits up
+upgrade, the MSI asks the running `Xpeditze.exe` or legacy `Central Docs.exe`
+process to close, waits up
 to ten seconds, and terminates it only if it does not exit. User data beneath
-`%LOCALAPPDATA%\Central Docs` is not removed.
+`%LOCALAPPDATA%\Xpeditze` and the legacy `%LOCALAPPDATA%\Central Docs` are not removed.

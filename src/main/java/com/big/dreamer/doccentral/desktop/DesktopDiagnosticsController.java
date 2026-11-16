@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RequestMapping("/api/v1/desktop/diagnostics")
 public class DesktopDiagnosticsController {
 
-    private static final String APPLICATION_LOG_FILE_NAME = "central-docs.log";
+    private static final String APPLICATION_LOG_FILE_NAME = "xpeditze.log";
     private static final String STARTUP_FAILURE_LOG_FILE_NAME = "startup-failure.log";
 
     private final ApplicationDirectories directories;
@@ -61,7 +61,7 @@ public class DesktopDiagnosticsController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/zip"))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        ContentDisposition.attachment().filename("central-docs-support.zip").build().toString())
+                        ContentDisposition.attachment().filename("xpeditze-support.zip").build().toString())
                 .body(supportPackageService.create());
     }
 

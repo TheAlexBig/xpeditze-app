@@ -28,7 +28,7 @@ public class ApplicationDirectories {
             Files.createDirectories(dataDirectory);
             Files.createDirectories(documentsDirectory);
         } catch (IOException exception) {
-            throw new IllegalStateException("Unable to create Central Docs local directories.", exception);
+            throw new IllegalStateException("Unable to create Xpeditze local directories.", exception);
         }
     }
 
@@ -58,8 +58,8 @@ public class ApplicationDirectories {
     }
 
     public Path licenseReceiptFile() {
-        Path centralDocsDirectory = documentsDirectory.getParent();
-        return (centralDocsDirectory == null ? documentsDirectory : centralDocsDirectory)
+        Path applicationDocumentsDirectory = documentsDirectory.getParent();
+        return (applicationDocumentsDirectory == null ? documentsDirectory : applicationDocumentsDirectory)
                 .resolve("license.json");
     }
 

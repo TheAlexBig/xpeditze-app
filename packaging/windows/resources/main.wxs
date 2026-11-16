@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Based on the OpenJDK 21 jpackage Windows main.wxs template.
-  The CloseApplication entry is the Central Docs customization.
+  The CloseApplication entries are the Xpeditze upgrade customization.
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
@@ -73,9 +73,21 @@
     <CustomAction Id="JpFindRelatedProducts" BinaryKey="JpCaDll" DllEntry="FindRelatedProductsEx" />
 
     <util:CloseApplication
-      Id="CloseCentralDocs"
+      Id="CloseXpeditze"
+      Target="Xpeditze.exe"
+      Description="Xpeditze debe cerrarse para continuar con la actualización."
+      CloseMessage="yes"
+      ElevatedCloseMessage="yes"
+      EndSessionMessage="yes"
+      ElevatedEndSessionMessage="yes"
+      Timeout="10"
+      TerminateProcess="0"
+      RebootPrompt="no" />
+
+    <util:CloseApplication
+      Id="CloseLegacyCentralDocs"
       Target="Central Docs.exe"
-      Description="Central Docs debe cerrarse para continuar con la actualización."
+      Description="Central Docs debe cerrarse para actualizar a Xpeditze."
       CloseMessage="yes"
       ElevatedCloseMessage="yes"
       EndSessionMessage="yes"

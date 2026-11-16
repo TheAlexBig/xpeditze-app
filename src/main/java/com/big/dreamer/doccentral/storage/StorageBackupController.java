@@ -27,7 +27,7 @@ public class StorageBackupController {
 
     @GetMapping
     public ResponseEntity<byte[]> download() {
-        String fileName = "central-docs-backup-" + LocalDate.now() + ".zip";
+        String fileName = "xpeditze-backup-" + LocalDate.now() + ".zip";
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/zip"))
                 .header(HttpHeaders.CONTENT_DISPOSITION,

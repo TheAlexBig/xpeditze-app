@@ -29,10 +29,10 @@ import java.util.List;
 public final class DesktopMode {
 
     public static final int PORT = 17831;
-    public static final URI APPLICATION_URI = URI.create("http://central-docs.localhost:" + PORT + "/");
+    public static final URI APPLICATION_URI = URI.create("http://xpeditze.localhost:" + PORT + "/");
     private static final URI STATUS_URI = URI.create("http://127.0.0.1:" + PORT + "/api/v1/desktop/status");
     private static final Logger LOGGER = LoggerFactory.getLogger(DesktopMode.class);
-    private static final String LOG_FILE_NAME = "central-docs.log";
+    private static final String LOG_FILE_NAME = "xpeditze.log";
     private static final String STARTUP_FAILURE_LOG_FILE_NAME = "startup-failure.log";
     private static FileChannel lockChannel;
     private static FileLock applicationLock;
@@ -66,7 +66,7 @@ public final class DesktopMode {
             System.setProperty("logging.logback.rollingpolicy.max-file-size", "10MB");
             System.setProperty("logging.logback.rollingpolicy.max-history", "7");
         } catch (IOException exception) {
-            System.err.println("Unable to configure Central Docs desktop logging: " + exception.getMessage());
+            System.err.println("Unable to configure Xpeditze desktop logging: " + exception.getMessage());
         }
     }
 
@@ -86,7 +86,7 @@ public final class DesktopMode {
                     StandardOpenOption.CREATE,
                     StandardOpenOption.APPEND);
         } catch (IOException loggingException) {
-            System.err.println("Unable to write Central Docs startup failure log: " + loggingException.getMessage());
+            System.err.println("Unable to write Xpeditze startup failure log: " + loggingException.getMessage());
             exception.printStackTrace(System.err);
         }
     }
@@ -95,7 +95,7 @@ public final class DesktopMode {
         StringWriter stackTrace = new StringWriter();
         exception.printStackTrace(new PrintWriter(stackTrace));
         return System.lineSeparator()
-                + "==== Central Docs startup failure at "
+                + "==== Xpeditze startup failure at "
                 + Instant.now()
                 + " ===="
                 + System.lineSeparator()
@@ -113,7 +113,8 @@ public final class DesktopMode {
                     .connectTimeout(Duration.ofSeconds(1))
                     .build()
                     .send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200 && "central-docs".equals(response.body())) {
+            if (response.statusCode() == 200
+                    && ("xpeditze".equals(response.body()) || "central-docs".equals(response.body()))) {
                 openBrowser();
                 return true;
             }
@@ -126,7 +127,7 @@ public final class DesktopMode {
     }
 
     public static boolean claimNewInstance() {
-        Path lockPath = UserDataLocations.applicationDataDirectory().resolve("central-docs.lock");
+        Path lockPath = UserDataLocations.applicationDataDirectory().resolve("xpeditze.lock");
         try {
             Files.createDirectories(lockPath.getParent());
             lockChannel = FileChannel.open(lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
@@ -149,20 +150,20 @@ public final class DesktopMode {
                 return true;
             }
         }
-        LOGGER.warn("Another Central Docs process is starting, but its browser interface is not ready yet.");
+        LOGGER.warn("Another Xpeditze process is starting, but its browser interface is not ready yet.");
         return false;
     }
 
     public static boolean canOpenApplicationPort() {
         try (ServerSocket socket = new ServerSocket(PORT, 1, InetAddress.getByName("127.0.0.1"))) {
             socket.setReuseAddress(false);
-            LOGGER.warn("Central Docs lock is held, but port {} is free. Starting a new local server.", PORT);
+            LOGGER.warn("Xpeditze lock is held, but port {} is free. Starting a new local server.", PORT);
             return true;
         } catch (IOException exception) {
             if (reuseExistingInstance()) {
                 return false;
             }
-            LOGGER.warn("Central Docs cannot start because port {} is not available.", PORT, exception);
+            LOGGER.warn("Xpeditze cannot start because port {} is not available.", PORT, exception);
             return false;
         }
     }
@@ -174,10 +175,10 @@ public final class DesktopMode {
             Path localConfiguration = configDirectory.resolve("application.yml");
             if (Files.notExists(localConfiguration)) {
                 Files.writeString(localConfiguration, """
-                        # Local Central Docs settings. Restart the application after changing them.
+                        # Local Xpeditze settings. Restart the application after changing them.
                         # app:
                         #   storage:
-                        #     documents-directory: C:/Users/YourName/Documents/Central Docs/Documents
+                        #     documents-directory: C:/Users/YourName/Documents/Xpeditze/Documents
                         """, StandardCharsets.UTF_8);
             }
         } catch (IOException exception) {
@@ -202,7 +203,7 @@ public final class DesktopMode {
                         .start();
                 return;
             }
-            LOGGER.warn("Central Docs is available at {}, but no browser launcher is available.", APPLICATION_URI);
+            LOGGER.warn("Xpeditze is available at {}, but no browser launcher is available.", APPLICATION_URI);
         } catch (IOException exception) {
             LOGGER.warn("Unable to open the browser automatically. Open {} manually.", APPLICATION_URI, exception);
         }

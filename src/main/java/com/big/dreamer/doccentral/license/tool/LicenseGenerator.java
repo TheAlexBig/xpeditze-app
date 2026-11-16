@@ -26,7 +26,7 @@ public final class LicenseGenerator {
                 Path.of(System.getProperty("user.home"), ".central-docs-licensing", "license-private-key.pem").toString()));
 
         LicenseDocument unsigned = new LicenseDocument(
-                "CD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
+                "XP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
                 customer.trim(), machine.trim(), LocalDate.now().toString(), "");
         String signature = LicenseCryptography.sign(unsigned, PemKeys.privateKey(Files.readAllBytes(privateKey)));
         LicenseDocument signed = new LicenseDocument(

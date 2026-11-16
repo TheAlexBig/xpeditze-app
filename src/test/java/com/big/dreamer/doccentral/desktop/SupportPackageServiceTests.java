@@ -24,7 +24,7 @@ class SupportPackageServiceTests {
 
     @Test
     void includesOnlySanitizedDiagnosticsAndLogs() throws Exception {
-        Files.writeString(directory.resolve("central-docs.log"),
+        Files.writeString(directory.resolve("xpeditze.log"),
                 "User " + System.getProperty("user.home")
                         + " DUI 01234567-8 machine CD-0123456789ABCDEF01234567"
                         + " email person@example.com \"signature\":\"secret\"");
@@ -34,10 +34,10 @@ class SupportPackageServiceTests {
 
         Map<String, String> files = unzip(service.create());
 
-        assertThat(files).containsKeys("diagnostics.txt", "central-docs.log");
+        assertThat(files).containsKeys("diagnostics.txt", "xpeditze.log");
         assertThat(files.keySet()).noneMatch(name -> name.contains("license") || name.contains("document"));
-        assertThat(files.get("central-docs.log"))
-                .contains("<USER_HOME>", "<DUI_REDACTED>", "CD-<REDACTED>",
+        assertThat(files.get("xpeditze.log"))
+                .contains("<USER_HOME>", "<DUI_REDACTED>", "XP-<REDACTED>",
                         "<EMAIL_REDACTED>", "<REDACTED>")
                 .doesNotContain("01234567-8", "person@example.com", "secret");
     }

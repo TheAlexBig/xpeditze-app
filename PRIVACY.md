@@ -1,15 +1,15 @@
-# Política de privacidad de Central Docs
+# Política de privacidad de Xpeditze
 
-Última actualización: 4 de septiembre de 2026.
+Última actualización: 16 de noviembre de 2026.
 
-Central Docs es una aplicación de escritorio que funciona localmente. La
+Xpeditze es una aplicación de escritorio que funciona localmente. La
 aplicación no incluye telemetría, publicidad, analítica, cuentas en línea ni
 servicios de sincronización, y no transfiere información a otros sistemas de
 red salvo que el usuario lo solicite expresamente.
 
 ## Información tratada
 
-Central Docs puede tratar y conservar en el equipo información introducida por
+Xpeditze puede tratar y conservar en el equipo información introducida por
 el usuario, incluyendo:
 
 - nombres, DUI, fecha de nacimiento, domicilio, género y profesión u oficio;
@@ -29,7 +29,7 @@ el usuario, incluyendo:
 De manera predeterminada, los datos de aplicación se guardan en:
 
 ```text
-%LOCALAPPDATA%\Central Docs\
+%LOCALAPPDATA%\Xpeditze\
 ```
 
 Esto incluye archivos JSON de personas, vehículos, agentes e historial,
@@ -37,16 +37,18 @@ plantillas editables, configuración, respaldos automáticos y logs técnicos.
 Los documentos generados se guardan normalmente en:
 
 ```text
-%USERPROFILE%\Documents\Central Docs\Documents\
+%USERPROFILE%\Documents\Xpeditze\Documents\
 ```
 
-El usuario puede configurar otra ubicación para los documentos. La aplicación
+Las instalaciones actualizadas pueden continuar usando las carpetas heredadas
+con el nombre `Central Docs` para conservar los datos existentes. El usuario
+puede configurar otra ubicación para los documentos. La aplicación
 abre una interfaz local mediante `http://127.0.0.1:17831`; esa comunicación no
 sale del equipo.
 
 ## Transmisión y terceros
 
-Central Docs no envía los datos anteriores al mantenedor, a SignPath, a GitHub
+Xpeditze no envía los datos anteriores al mantenedor, a SignPath, a GitHub
 ni a servicios de terceros. Descargar el instalador, visitar GitHub o enviar
 voluntariamente un reporte de seguridad ocurre fuera de la aplicación y está
 sujeto a las políticas del servicio utilizado.
@@ -64,7 +66,7 @@ documento legal necesario.
 
 ## Seguridad y responsabilidades
 
-Central Docs no cifra por sí mismo los archivos locales. La protección del
+Xpeditze no cifra por sí mismo los archivos locales. La protección del
 equipo, la cuenta de Windows, las copias de seguridad y los permisos de las
 carpetas corresponde al usuario o al administrador del sistema. No se deben
 introducir datos personales en equipos compartidos o no confiables.

@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$Version = "1.0.0",
-    [string]$FrontendDirectory = (Join-Path $PSScriptRoot "..\..\..\doc-central-forms")
+    [string]$FrontendDirectory = (Join-Path $PSScriptRoot "..\..\..\xpeditze-forms")
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,10 +11,10 @@ $FrontendDist = Join-Path $FrontendDirectory "dist"
 $TargetDirectory = Join-Path $BackendDirectory "target"
 $InputDirectory = Join-Path $TargetDirectory "jpackage-input"
 $InstallerDirectory = Join-Path $TargetDirectory "installer"
-$IconPath = Join-Path $TargetDirectory "central-docs.ico"
+$IconPath = Join-Path $TargetDirectory "xpeditze.ico"
 $JpackageResourceDirectory = Join-Path $PSScriptRoot "resources"
 
-function New-CentralDocsIcon {
+function New-XpeditzeIcon {
     param([string]$Destination)
 
     Add-Type -AssemblyName PresentationCore, PresentationFramework, WindowsBase
@@ -32,14 +32,14 @@ function New-CentralDocsIcon {
         54,
         54)
     $text = [System.Windows.Media.FormattedText]::new(
-        "C",
+        "X",
         [System.Globalization.CultureInfo]::InvariantCulture,
         [System.Windows.FlowDirection]::LeftToRight,
         [System.Windows.Media.Typeface]::new("Segoe UI Semibold"),
         170,
         $foreground,
         1.0)
-    $drawing.DrawText($text, [System.Windows.Point]::new(72, 35))
+    $drawing.DrawText($text, [System.Windows.Point]::new(70, 35))
     $drawing.Close()
 
     $bitmap = [System.Windows.Media.Imaging.RenderTargetBitmap]::new(
@@ -88,18 +88,18 @@ if (Test-Path $InputDirectory) {
     Remove-Item -Recurse -Force $InputDirectory
 }
 New-Item -ItemType Directory -Force -Path $InputDirectory, $InstallerDirectory | Out-Null
-$JarPath = Get-ChildItem -Path $TargetDirectory -Filter "doc-central-*.jar" |
+$JarPath = Get-ChildItem -Path $TargetDirectory -Filter "xpeditze-*.jar" |
     Select-Object -First 1
 if ($null -eq $JarPath) {
     throw "The Spring Boot application jar was not created."
 }
 $ApplicationJar = $JarPath.Name
 Copy-Item -Force $JarPath.FullName $InputDirectory
-New-CentralDocsIcon -Destination $IconPath
+New-XpeditzeIcon -Destination $IconPath
 
 & jpackage `
     --type msi `
-    --name "Central Docs" `
+    --name "Xpeditze" `
     --description "Offline legal document generator" `
     --vendor "TheAlexBig" `
     --app-version $Version `
@@ -112,7 +112,7 @@ New-CentralDocsIcon -Destination $IconPath
     --resource-dir $JpackageResourceDirectory `
     --icon $IconPath `
     --win-menu `
-    --win-menu-group "Central Docs" `
+    --win-menu-group "Xpeditze" `
     --win-shortcut `
     --win-dir-chooser `
     --win-upgrade-uuid "89a023d9-748e-4479-97ea-571e9b027a84"

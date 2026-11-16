@@ -1,6 +1,6 @@
 # SignPath Foundation Readiness Requirements
 
-This document defines the requirements Central Docs must satisfy before the
+This document defines the requirements Xpeditze must satisfy before the
 project applies for free code signing through SignPath Foundation. It is a
 readiness specification, not confirmation that SignPath will accept the
 project. Acceptance remains at SignPath Foundation's discretion.
@@ -9,7 +9,7 @@ project. Acceptance remains at SignPath Foundation's discretion.
 
 Produce a Windows MSI that:
 
-- is built from the public Central Docs source repositories on a GitHub-hosted
+- is built from the public Xpeditze source repositories on a GitHub-hosted
   runner;
 - is submitted to SignPath without exposing a signing private key;
 - receives an Authenticode signature and trusted timestamp;
@@ -27,8 +27,8 @@ The signed product is assembled from two repositories:
 
 | Component                                            | Repository                     | Default branch |
 | ---------------------------------------------------- | ------------------------------ | -------------- |
-| Desktop host, API, templates, and installer workflow | `TheAlexBig/doc-central-app`   | `master`       |
-| React user interface                                 | `TheAlexBig/doc-central-forms` | `main`         |
+| Desktop host, API, templates, and installer workflow | `TheAlexBig/xpeditze-app`   | `main`         |
+| React user interface                                 | `TheAlexBig/xpeditze-forms` | `main`         |
 
 Both repositories are part of the product's source and policy scope. A release
 is not eligible for signing unless the exact frontend revision is recorded by
@@ -39,7 +39,7 @@ the backend build and both revisions satisfy the approved source policy.
 ### R1. Open-source licensing
 
 - Both repositories MUST contain an OSI-approved license.
-- All code and other material maintained as part of Central Docs MUST be
+- All code and other material maintained as part of Xpeditze MUST be
   compatible with that license.
 - Legal document template text, images, fonts, icons, and other bundled assets
   MUST have documented ownership and redistribution permission.
@@ -60,7 +60,7 @@ template text is covered by it or needs separate licensing documentation.
 - Both repositories MUST remain publicly accessible.
 - The application MUST be actively maintained.
 - The source MUST include the scripts and workflow used to produce the MSI.
-- The project MUST sign only Central Docs releases built from its own source.
+- The project MUST sign only Xpeditze releases built from its own source.
 
 Current status: **Partially satisfied**. Both repositories are public and the
 build scripts are versioned. Maintenance and release history should be made
@@ -68,7 +68,7 @@ clearer through published releases and project metadata.
 
 ### R3. Existing public release
 
-- Central Docs MUST have at least one public release in the same MSI format
+- Xpeditze MUST have at least one public release in the same MSI format
   that will later be signed.
 - The release page MUST describe the product, installation, uninstallation,
   supported Windows versions, and known first-run security warning.
@@ -78,7 +78,7 @@ clearer through published releases and project metadata.
 Current status: **Satisfied**. Version `v1.0.3` is publicly available with its
 MSI, SHA-256 checksum, source revisions, build run, installation warning, and
 verification notes:
-<https://github.com/TheAlexBig/doc-central-app/releases/tag/v1.0.3>.
+<https://github.com/TheAlexBig/xpeditze-app/releases/tag/v1.0.3>.
 
 ### R4. Privacy and end-user behavior
 
@@ -175,18 +175,18 @@ remain pending until the project is accepted and configured by SignPath.
 
 ### R8. Artifact configuration
 
-SignPath MUST be configured to accept only the intended Central Docs MSI. At a
+SignPath MUST be configured to accept only the intended Xpeditze MSI. At a
 minimum, the configuration MUST restrict:
 
-- filename pattern: `CentralDocs-<version>.msi` or the final agreed pattern;
-- MSI product name: `Central Docs`;
+- filename pattern: `Xpeditze-<version>.msi`;
+- MSI product name: `Xpeditze`;
 - MSI author/manufacturer: the final approved value;
 - product version: the workflow release version;
 - permitted nested executable paths and counts.
 
 The artifact configuration SHOULD deep-sign executable files produced by
-Central Docs inside the MSI when technically supported. It MUST NOT apply the
-project signature to third-party binaries as if Central Docs maintained them.
+Xpeditze inside the MSI when technically supported. It MUST NOT apply the
+project signature to third-party binaries as if Xpeditze maintained them.
 Third-party files may be included unsigned when allowed by SignPath policy, or
 their existing trusted signatures may be verified.
 
@@ -217,7 +217,7 @@ The following decisions cannot be inferred from the source code:
 
 ## Application-Ready Definition
 
-Central Docs is ready to submit its SignPath Foundation application only when:
+Xpeditze is ready to submit its SignPath Foundation application only when:
 
 - every mandatory gate R1-R8 is marked satisfied with a public evidence link;
 - the two repositories use compatible OSI-approved licenses;

@@ -2,7 +2,7 @@
 
 ## Versiones compatibles
 
-Solo la versión estable más reciente de Central Docs recibe correcciones de
+Solo la versión estable más reciente de Xpeditze recibe correcciones de
 seguridad. Los usuarios deben actualizar a la última versión publicada antes
 de reportar un problema ya corregido.
 
@@ -12,7 +12,7 @@ No publique vulnerabilidades, datos personales, documentos legales reales ni
 credenciales en un issue público.
 
 Utilice la opción **Report a vulnerability** de la pestaña **Security** del
-repositorio `TheAlexBig/doc-central-app`. El reporte debe incluir, cuando sea
+repositorio `TheAlexBig/xpeditze-app`. El reporte debe incluir, cuando sea
 posible:
 
 - versión afectada;

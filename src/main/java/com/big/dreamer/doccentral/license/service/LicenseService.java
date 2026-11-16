@@ -50,7 +50,7 @@ public class LicenseService {
     public LicenseStatus status() {
         String machineCode = machineCodeProvider.machineCode();
         if (Files.notExists(directories.licenseFile())) {
-            return new LicenseStatus(false, machineCode, null, null, "Central Docs requiere activación.");
+            return new LicenseStatus(false, machineCode, null, null, "Xpeditze requiere activación.");
         }
         try {
             LicenseDocument license = objectMapper.readValue(directories.licenseFile().toFile(), LicenseDocument.class);
@@ -78,7 +78,7 @@ public class LicenseService {
 
     public void requireActive() {
         if (!status().active()) {
-            throw new LicenseException("Central Docs requiere una licencia válida para generar documentos.");
+            throw new LicenseException("Xpeditze requiere una licencia válida para generar documentos.");
         }
     }
 

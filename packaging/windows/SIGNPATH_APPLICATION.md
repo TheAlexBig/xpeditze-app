@@ -9,25 +9,25 @@ repository.
 **Project Name**
 
 ```text
-Central Docs El Salvador
+Xpeditze El Salvador
 ```
 
 **Repository URL**
 
 ```text
-https://github.com/TheAlexBig/doc-central-app
+https://github.com/TheAlexBig/xpeditze-app
 ```
 
 **Homepage URL**
 
 ```text
-https://github.com/TheAlexBig/doc-central-app
+https://github.com/TheAlexBig/xpeditze-app
 ```
 
 **Download URL**
 
 ```text
-https://github.com/TheAlexBig/doc-central-app/releases/latest
+https://github.com/TheAlexBig/xpeditze-app/releases/latest
 ```
 
 The repository README and release page include the required SignPath
@@ -36,12 +36,12 @@ Foundation code-signing notice.
 **Privacy Policy URL**
 
 ```text
-https://github.com/TheAlexBig/doc-central-app/blob/master/PRIVACY.md
+https://github.com/TheAlexBig/xpeditze-app/blob/main/PRIVACY.md
 ```
 
 **Wikipedia URL**
 
-Leave blank. Central Docs does not have an English Wikipedia article.
+Leave blank. Xpeditze does not have an English Wikipedia article.
 
 **Tagline**
 
@@ -52,19 +52,19 @@ Offline-first Windows software for preparing legal documents in El Salvador.
 **Description**
 
 ```text
-Central Docs is an open-source, offline-first Windows desktop application that helps legal professionals in El Salvador prepare documents through guided Spanish forms. It stores working data and generated documents locally on the user's computer and produces editable Word and PDF files for professional review.
+Xpeditze is an open-source, offline-first Windows desktop application that helps legal professionals in El Salvador prepare documents through guided Spanish forms. It stores working data and generated documents locally on the user's computer and produces editable Word and PDF files for professional review.
 ```
 
 **Reputation**
 
 ```text
-Central Docs is an early-stage open-source project, so it does not yet claim broad adoption. The public repository has been available since March 2022 and is actively maintained. It publishes reproducible Windows MSI releases through GitHub-hosted Actions, with public build history, GitHub artifact attestations, SHA-256 checksums, an Apache-2.0 license, a privacy policy, private vulnerability reporting, and documented code-signing controls.
+Xpeditze is an early-stage open-source project, so it does not yet claim broad adoption. The public repository has been available since March 2022 and is actively maintained. It publishes reproducible Windows MSI releases through GitHub-hosted Actions, with public build history, GitHub artifact attestations, SHA-256 checksums, an Apache-2.0 license, a privacy policy, private vulnerability reporting, and documented code-signing controls.
 
-Repository: https://github.com/TheAlexBig/doc-central-app
-Releases: https://github.com/TheAlexBig/doc-central-app/releases
-Build history: https://github.com/TheAlexBig/doc-central-app/actions/workflows/windows-installer.yml
-Security policy: https://github.com/TheAlexBig/doc-central-app/security/policy
-Code signing policy: https://github.com/TheAlexBig/doc-central-app/blob/master/CODE_SIGNING_POLICY.md
+Repository: https://github.com/TheAlexBig/xpeditze-app
+Releases: https://github.com/TheAlexBig/xpeditze-app/releases
+Build history: https://github.com/TheAlexBig/xpeditze-app/actions/workflows/windows-installer.yml
+Security policy: https://github.com/TheAlexBig/xpeditze-app/security/policy
+Code signing policy: https://github.com/TheAlexBig/xpeditze-app/blob/main/CODE_SIGNING_POLICY.md
 ```
 
 **Maintainer Type**

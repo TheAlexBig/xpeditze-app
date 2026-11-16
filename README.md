@@ -1,6 +1,6 @@
-# Central Docs El Salvador
+# Xpeditze El Salvador
 
-Central Docs is an offline-first Windows desktop application for generating
+Xpeditze is an offline-first Windows desktop application for generating
 legal documents in El Salvador. Its guided Spanish workflows prepare vehicle
 purchase-and-sale agreements and simple mutual agreements in Word and PDF.
 The packaged application runs on the user's computer without a cloud account
@@ -9,14 +9,14 @@ or external database.
 ## Download
 
 Download the current MSI and its SHA-256 checksum from the
-[latest Central Docs release](https://github.com/TheAlexBig/doc-central-app/releases/latest).
+[latest Xpeditze release](https://github.com/TheAlexBig/xpeditze-app/releases/latest).
 
 Code signing policy: Free code signing provided by SignPath.io, certificate by
 SignPath Foundation. Releases published before completion of the SignPath
 onboarding process, including `v1.0.3`, are not yet Authenticode-signed and may
 display `Unknown publisher` in Windows.
 
-Central Docs is licensed under the [Apache License 2.0](LICENSE). See the
+Xpeditze is licensed under the [Apache License 2.0](LICENSE). See the
 [privacy policy](PRIVACY.md), [security policy](SECURITY.md), and
 [code signing policy](CODE_SIGNING_POLICY.md).
 
@@ -66,9 +66,9 @@ locally.
 ## Offline Desktop Behavior
 
 The installed application starts a local Spring Boot server on
-`http://central-docs.localhost:17831`, serves the compiled React application from that
+`http://xpeditze.localhost:17831`, serves the compiled React application from that
 process, and opens it in the user's default browser. API requests remain local
-under `/api`. A second application launch checks the running Central Docs
+under `/api`. A second application launch checks the running Xpeditze
 instance and opens its browser interface instead of starting another server.
 
 No network service, database, Docker installation, or separately installed
@@ -77,10 +77,13 @@ created locally on first launch and remain editable offline:
 
 | Content             | Windows location                                     |
 | ------------------- | ---------------------------------------------------- |
-| Editable car-sale templates | `%LOCALAPPDATA%\Central Docs\templates\car-sale\` |
-| Optional settings   | `%LOCALAPPDATA%\Central Docs\config\application.yml` |
-| Saved legal agents  | `%LOCALAPPDATA%\Central Docs\agents.json`            |
-| Generated documents | `%USERPROFILE%\Documents\Central Docs\Documents\`    |
+| Editable car-sale templates | `%LOCALAPPDATA%\Xpeditze\templates-v2\car-sale\` |
+| Optional settings   | `%LOCALAPPDATA%\Xpeditze\config\application.yml` |
+| Saved legal agents  | `%LOCALAPPDATA%\Xpeditze\agents.json`            |
+| Generated documents | `%USERPROFILE%\Documents\Xpeditze\Documents\`    |
+
+Upgraded installations continue using an existing `Central Docs` data or
+documents directory so licenses, drafts, templates, and history remain available.
 
 The template placeholders must remain present where the associated form values
 should be inserted. The generated local settings file contains an example for
@@ -115,7 +118,7 @@ documents, templates, and saved customer data, and redacts common identifiers
 from log text.
 
 Licenses are deliberately excluded from backups and remain tied to their
-original installation. Before replacing a JSON data file, Central Docs keeps
+original installation. Before replacing a JSON data file, Xpeditze keeps
 up to 25 local backups. If the active file becomes unreadable, the newest valid
 backup is restored automatically and the damaged file is retained with a
 `.corrupt-<timestamp>` suffix for diagnosis.
@@ -145,7 +148,7 @@ included Windows build workflow:
 
 It waits for the Windows runner and downloads the MSI artifact under
 `target/windows-installer/<workflow-run-id>/`. A successful release build also
-publishes `Central.Docs-<version>.msi` and `SHA256SUMS.txt` automatically in a
+publishes `Xpeditze-<version>.msi` and `SHA256SUMS.txt` automatically in a
 new GitHub Release. Existing releases are never overwritten.
 
 Each MSI created by the GitHub workflow receives a GitHub artifact attestation.
@@ -156,7 +159,7 @@ this repository's workflow; it does not change Windows' `Unknown publisher`
 warning, which requires Authenticode code signing.
 
 To build directly on Windows, install a Java 21 JDK that supplies `jpackage`,
-Node.js/npm, and WiX Toolset. Place `doc-central-app` and `doc-central-forms`
+Node.js/npm, and WiX Toolset. Place `xpeditze-app` and `xpeditze-forms`
 beside one another, then run from this repository:
 
 ```powershell

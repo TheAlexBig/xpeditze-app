@@ -4,14 +4,14 @@ Free code signing provided by SignPath.io, certificate by SignPath Foundation.
 
 ## Alcance
 
-Esta política cubre el MSI de Central Docs producido desde:
+Esta política cubre el MSI de Xpeditze producido desde:
 
-- `TheAlexBig/doc-central-app`, que contiene el host de escritorio, backend,
+- `TheAlexBig/xpeditze-app`, que contiene el host de escritorio, backend,
   plantillas y workflow del instalador;
-- `TheAlexBig/doc-central-forms`, que contiene la interfaz React incorporada
+- `TheAlexBig/xpeditze-forms`, que contiene la interfaz React incorporada
   en el instalador.
 
-Solo se solicitará la firma de versiones públicas de Central Docs construidas
+Solo se solicitará la firma de versiones públicas de Xpeditze construidas
 por el workflow versionado del repositorio. No se firmarán artefactos locales,
 software de terceros presentado como propio ni archivos creados fuera del
 proceso autorizado.

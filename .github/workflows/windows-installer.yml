@@ -1,6 +1,6 @@
 name: Build Windows Installer
 
-run-name: Central Docs Windows installer v${{ inputs.version }} with frontend ${{ inputs.frontend_ref }} (${{ inputs.request_id }})
+run-name: Xpeditze Windows installer v${{ inputs.version }} with frontend ${{ inputs.frontend_ref }} (${{ inputs.request_id }})
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
         default: 1.0.0
         type: string
       frontend_ref:
-        description: Branch, tag, or commit from doc-central-forms
+        description: Branch, tag, or commit from xpeditze-forms
         required: true
         default: main
         type: string
@@ -38,15 +38,15 @@ jobs:
       - name: Check out desktop backend
         uses: actions/checkout@v6
         with:
-          path: doc-central-app
+          path: xpeditze-app
 
       - name: Check out React frontend
         id: frontend-checkout
         uses: actions/checkout@v6
         with:
-          repository: TheAlexBig/doc-central-forms
+          repository: TheAlexBig/xpeditze-forms
           ref: ${{ inputs.frontend_ref }}
-          path: doc-central-forms
+          path: xpeditze-forms
 
       - name: Validate release version and record source revisions
         id: source
@@ -58,9 +58,9 @@ jobs:
             throw "Version must use the numeric format 1.2.3."
           }
 
-          [xml]$pom = Get-Content '.\doc-central-app\pom.xml'
+          [xml]$pom = Get-Content '.\xpeditze-app\pom.xml'
           $backendVersion = $pom.project.version
-          $frontendPackage = Get-Content '.\doc-central-forms\package.json' |
+          $frontendPackage = Get-Content '.\xpeditze-forms\package.json' |
             ConvertFrom-Json
           $frontendVersion = $frontendPackage.version
 
@@ -71,8 +71,8 @@ jobs:
             throw "Frontend version $frontendVersion does not match installer version $env:INSTALLER_VERSION."
           }
 
-          $backendSha = git -C .\doc-central-app rev-parse HEAD
-          $frontendSha = git -C .\doc-central-forms rev-parse HEAD
+          $backendSha = git -C .\xpeditze-app rev-parse HEAD
+          $frontendSha = git -C .\xpeditze-forms rev-parse HEAD
           "backend_sha=$backendSha" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
           "frontend_sha=$frontendSha" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
 
@@ -81,7 +81,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: doc-central-forms/package-lock.json
+          cache-dependency-path: xpeditze-forms/package-lock.json
 
       - name: Set up Java 21
         uses: actions/setup-java@v4
@@ -89,7 +89,7 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
-          cache-dependency-path: doc-central-app/pom.xml
+          cache-dependency-path: xpeditze-app/pom.xml
 
       - name: Ensure WiX Toolset is available
         shell: pwsh
@@ -106,9 +106,9 @@ jobs:
         env:
           INSTALLER_VERSION: ${{ inputs.version }}
         run: |
-          .\doc-central-app\packaging\windows\build-installer.ps1 `
+          .\xpeditze-app\packaging\windows\build-installer.ps1 `
             -Version $env:INSTALLER_VERSION `
-            -FrontendDirectory (Resolve-Path '.\doc-central-forms').Path
+            -FrontendDirectory (Resolve-Path '.\xpeditze-forms').Path
 
       - name: Prepare release assets and checksum
         id: release-assets
@@ -118,13 +118,13 @@ jobs:
           BACKEND_SHA: ${{ steps.source.outputs.backend_sha }}
           FRONTEND_SHA: ${{ steps.source.outputs.frontend_sha }}
         run: |
-          $installerDirectory = Resolve-Path '.\doc-central-app\target\installer'
+          $installerDirectory = Resolve-Path '.\xpeditze-app\target\installer'
           $msi = Get-ChildItem $installerDirectory -Filter '*.msi' -File
           if ($msi.Count -ne 1) {
             throw "Expected exactly one MSI, found $($msi.Count)."
           }
 
-          $releaseMsi = Join-Path $installerDirectory "Central.Docs-$env:INSTALLER_VERSION.msi"
+          $releaseMsi = Join-Path $installerDirectory "Xpeditze-$env:INSTALLER_VERSION.msi"
           if ($msi.FullName -ne $releaseMsi) {
             Move-Item -Force $msi.FullName $releaseMsi
           }
@@ -151,7 +151,7 @@ jobs:
           Descargue ambos archivos y ejecute:
 
           ``````powershell
-          Get-FileHash .\Central.Docs-$env:INSTALLER_VERSION.msi -Algorithm SHA256
+          Get-FileHash .\Xpeditze-$env:INSTALLER_VERSION.msi -Algorithm SHA256
           ``````
 
           Compare el resultado con ``SHA256SUMS.txt``.
@@ -174,7 +174,7 @@ jobs:
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
-          name: central-docs-windows-msi-${{ inputs.version }}
+          name: xpeditze-windows-msi-${{ inputs.version }}
           path: |
             ${{ steps.release-assets.outputs.msi }}
             ${{ steps.release-assets.outputs.checksum }}
@@ -201,5 +201,5 @@ jobs:
             "$env:CHECKSUM_PATH#Checksum SHA-256" `
             --repo $env:GITHUB_REPOSITORY `
             --target $env:GITHUB_SHA `
-            --title "Central Docs $tag" `
+            --title "Xpeditze $tag" `
             --notes-file $env:NOTES_PATH

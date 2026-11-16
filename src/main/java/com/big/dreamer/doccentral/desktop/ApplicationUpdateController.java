@@ -20,9 +20,9 @@ import java.time.Duration;
 @RequestMapping("/api/v1/application")
 public class ApplicationUpdateController {
 
-    private static final String RELEASES_URL = "https://github.com/TheAlexBig/doc-central-app/releases";
+    private static final String RELEASES_URL = "https://github.com/TheAlexBig/xpeditze-app/releases";
     private static final URI LATEST_RELEASE_API = URI.create(
-            "https://api.github.com/repos/TheAlexBig/doc-central-app/releases/latest");
+            "https://api.github.com/repos/TheAlexBig/xpeditze-app/releases/latest");
     private final ObjectMapper objectMapper;
     private final ObjectProvider<BuildProperties> buildProperties;
     private final HttpClient httpClient = HttpClient.newBuilder()
@@ -45,7 +45,7 @@ public class ApplicationUpdateController {
             HttpRequest request = HttpRequest.newBuilder(LATEST_RELEASE_API)
                     .timeout(Duration.ofSeconds(8))
                     .header("Accept", "application/vnd.github+json")
-                    .header("User-Agent", "Central-Docs/" + current)
+                    .header("User-Agent", "Xpeditze/" + current)
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) throw new IOException("GitHub returned " + response.statusCode());

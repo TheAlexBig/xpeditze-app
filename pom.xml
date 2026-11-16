@@ -12,14 +12,14 @@
     </parent>
 
     <groupId>com.big.dreamer</groupId>
-    <artifactId>doc-central</artifactId>
+    <artifactId>xpeditze</artifactId>
     <version>1.0.24</version>
-    <name>doc-central</name>
-    <description>Central Docs legal document generation API</description>
+    <name>xpeditze</name>
+    <description>Xpeditze legal document generation API</description>
 
     <properties>
         <java.version>21</java.version>
-        <frontend.dist>${project.basedir}/../doc-central-forms/dist</frontend.dist>
+        <frontend.dist>${project.basedir}/../xpeditze-forms/dist</frontend.dist>
     </properties>
 
     <dependencies>

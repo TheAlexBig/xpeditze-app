@@ -34,7 +34,7 @@ public class SupportPackageService {
         try (ByteArrayOutputStream bytes = new ByteArrayOutputStream();
              ZipOutputStream zip = new ZipOutputStream(bytes, StandardCharsets.UTF_8)) {
             add(zip, "diagnostics.txt", diagnostics());
-            addSanitizedLog(zip, "central-docs.log");
+            addSanitizedLog(zip, "xpeditze.log");
             addSanitizedLog(zip, "startup-failure.log");
             zip.finish();
             return bytes.toByteArray();
@@ -45,7 +45,7 @@ public class SupportPackageService {
 
     private String diagnostics() {
         BuildProperties build = buildProperties.getIfAvailable();
-        return "Central Docs support diagnostics\n"
+        return "Xpeditze support diagnostics\n"
                 + "Generated: " + Instant.now() + "\n"
                 + "Version: " + (build == null ? "development" : build.getVersion()) + "\n"
                 + "Operating system: " + System.getProperty("os.name", "unknown") + "\n"
@@ -70,7 +70,7 @@ public class SupportPackageService {
         String username = System.getProperty("user.name", "");
         if (!username.isBlank()) sanitized = sanitized.replaceAll("(?i)\\b" + java.util.regex.Pattern.quote(username) + "\\b", "<USER>");
         return sanitized
-                .replaceAll("(?i)CD-[A-F0-9]{8,24}", "CD-<REDACTED>")
+                .replaceAll("(?i)(?:CD|XP)-[A-F0-9]{8,24}", "XP-<REDACTED>")
                 .replaceAll("\\b\\d{8}-?\\d\\b", "<DUI_REDACTED>")
                 .replaceAll("(?i)[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", "<EMAIL_REDACTED>")
                 .replaceAll("(?i)(\"signature\"\\s*:\\s*\")[^\"]+(\")", "$1<REDACTED>$2");

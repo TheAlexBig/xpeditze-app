@@ -5,7 +5,7 @@ version="${1:-1.0.0}"
 frontend_ref="${2:-main}"
 backend_ref="${3:-master}"
 publish_release="${4:-true}"
-repository="${DOC_CENTRAL_APP_REPOSITORY:-TheAlexBig/doc-central-app}"
+repository="${XPEDITZE_APP_REPOSITORY:-TheAlexBig/xpeditze-app}"
 output_directory="${DOC_CENTRAL_WINDOWS_OUTPUT:-target/windows-installer}"
 workflow="windows-installer.yml"
 request_id="linux-$(date -u +%Y%m%dT%H%M%SZ)-$$"
@@ -59,7 +59,7 @@ download_directory="$output_directory/$run_id"
 mkdir -p "$download_directory"
 gh run download "$run_id" \
   --repo "$repository" \
-  --name "central-docs-windows-msi-$version" \
+  --name "xpeditze-windows-msi-$version" \
   --dir "$download_directory"
 
 shopt -s nullglob
