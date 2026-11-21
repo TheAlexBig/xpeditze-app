@@ -2,6 +2,7 @@ package com.big.dreamer.doccentral.document.carsale.service;
 
 import com.big.dreamer.doccentral.document.carsale.model.CarDetails;
 import com.big.dreamer.doccentral.document.carsale.model.CarSaleDocumentRequest;
+import com.big.dreamer.doccentral.document.carsale.model.CompanyDetails;
 import com.big.dreamer.doccentral.document.carsale.model.DocumentDetails;
 import com.big.dreamer.doccentral.document.carsale.model.LegalAgentDetails;
 import com.big.dreamer.doccentral.document.carsale.model.PersonDetails;
@@ -30,6 +31,24 @@ class CarSaleRequestValidatorTests {
         assertThatThrownBy(() -> CarSaleRequestValidator.validate(request("1234 5678 9", "Notario")))
                 .isInstanceOf(CarSaleRequestValidationException.class)
                 .hasMessageContaining("diferentes");
+    }
+
+    @Test
+    void rejectsTheSameCompanyOnBothSides() {
+        CarSaleDocumentRequest base = request("87654321-0", "Notario");
+        CompanyDetails company = new CompanyDetails(
+                "Sociedad de Prueba, S.A. de C.V.", "", "Salvadoreña", "San Salvador",
+                "San Salvador", "0614-010101-001-1", "Representante Legal", "Credencial vigente");
+        CarSaleDocumentRequest request = new CarSaleDocumentRequest(
+                new PersonDetails("Maria", "Lopez", "San Salvador", "San Salvador",
+                        "12345678-9", "Femenino", "TREINTA", "Comerciante", company),
+                new PersonDetails("Carlos", "Perez", "La Libertad", "Santa Tecla",
+                        "87654321-0", "Masculino", "TREINTA", "Ingeniero", company),
+                base.vehicle(), base.document(), base.legalAgent());
+
+        assertThatThrownBy(() -> CarSaleRequestValidator.validate(request))
+                .isInstanceOf(CarSaleRequestValidationException.class)
+                .hasMessageContaining("sociedad compradora");
     }
 
     private CarSaleDocumentRequest request(String buyerDui, String role) {

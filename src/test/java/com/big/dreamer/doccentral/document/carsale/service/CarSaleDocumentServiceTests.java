@@ -2,6 +2,7 @@ package com.big.dreamer.doccentral.document.carsale.service;
 
 import com.big.dreamer.doccentral.document.carsale.model.CarDetails;
 import com.big.dreamer.doccentral.document.carsale.model.CarSaleDocumentRequest;
+import com.big.dreamer.doccentral.document.carsale.model.CompanyDetails;
 import com.big.dreamer.doccentral.document.carsale.model.DocumentDetails;
 import com.big.dreamer.doccentral.document.carsale.model.LegalAgentDetails;
 import com.big.dreamer.doccentral.document.carsale.model.PersonDetails;
@@ -9,6 +10,8 @@ import com.big.dreamer.doccentral.document.carsale.template.CarSaleTemplateRepos
 import com.big.dreamer.doccentral.document.render.LegalDocumentRenderer;
 import com.big.dreamer.doccentral.storage.ApplicationDirectories;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -144,6 +147,58 @@ class CarSaleDocumentServiceTests {
                     .contains("vehículo automotor usado")
                     .contains("CLASE: Motocicleta")
                     .contains("TIPO: Urbana");
+        }
+    }
+
+    @Test
+    void rendersACompanyRepresentedByTheAppearingSeller() throws Exception {
+        CompanyDetails company = new CompanyDetails(
+                "SOLARISTMO, SOCIEDAD ANÓNIMA DE CAPITAL VARIABLE",
+                "SOLARISTMO, S.A. DE C.V.", "salvadoreña", "San Salvador",
+                "San Salvador, Municipio de San Salvador Centro", "0614-310124-106-5",
+                "Administrador Único Propietario y Representante Legal",
+                "testimonio de escritura pública de constitución inscrito en el Registro de Comercio");
+        PersonDetails seller = new PersonDetails(
+                "Jesús Rafael", "Álvarez Fernández", "San Salvador", "San Salvador",
+                "12345678-9", "Masculino", "SESENTA Y NUEVE", "Empleado", company);
+        PersonDetails buyer = new PersonDetails(
+                "José David", "Mejía Herrera", "San Miguel", "San Miguel",
+                "87654321-0", "Masculino", "CUARENTA Y NUEVE", "Empleado");
+        var request = new CarSaleDocumentRequest(
+                seller, buyer,
+                new CarDetails("P-123", "Toyota", "Land Cruiser", "Blanco", "2026", "SIETE ASS",
+                        "Propiedad", "Automóvil", "Rústico", "M1", "C1", "V1"),
+                new DocumentDetails("Propiedad", "", "CIENTO DIEZ MIL", "San Salvador",
+                        "San Salvador", "diez de agosto de dos mil veintiséis", "once horas", "No", "Si"),
+                new LegalAgentDetails("Ana", "Valladares", "San Salvador", "San Salvador",
+                        "Femenino", "Notario"));
+
+        byte[] bytes = service.createDocument(request);
+
+        try (XWPFDocument generated = new XWPFDocument(new ByteArrayInputStream(bytes))) {
+            String text = generated.getParagraphs().stream()
+                    .map(paragraph -> paragraph.getText())
+                    .reduce("", (left, right) -> left + right);
+            assertThat(text)
+                    .contains("actuando en mi calidad de Administrador Único Propietario y Representante Legal")
+                    .contains("actuando en su calidad de Administrador Único Propietario y Representante Legal")
+                    .contains("SOLARISTMO, SOCIEDAD ANÓNIMA DE CAPITAL VARIABLE")
+                    .contains("que se puede abreviar SOLARISTMO, S.A. DE C.V.")
+                    .contains("con Número de Identificación Tributaria 0614-310124-106-5")
+                    .contains("personería que doy fe de ser legítima y suficiente")
+                    .contains("LA SOCIEDAD VENDEDORA")
+                    .contains("la sociedad vendedora es dueña y actual poseedora")
+                    .contains("la sociedad vendedora vende al comprador")
+                    .doesNotContain("quien actúa en su carácter personal y a quien en adelante denominaré “LA SOCIEDAD VENDEDORA”");
+        }
+
+        try (var pdf = Loader.loadPDF(service.createPdfDocument(request))) {
+            String pdfText = new PDFTextStripper().getText(pdf).replaceAll("\\s+", " ");
+            assertThat(pdfText)
+                    .contains("SOLARISTMO, SOCIEDAD ANÓNIMA DE CAPITAL VARIABLE")
+                    .contains("Administrador Único Propietario y Representante Legal")
+                    .contains("LA SOCIEDAD VENDEDORA")
+                    .contains("personería que doy fe de ser legítima y suficiente");
         }
     }
 }

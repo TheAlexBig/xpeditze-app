@@ -19,12 +19,12 @@ class CarSaleTemplateRepositoryTests {
 
         assertThat(repository.list()).hasSize(9)
                 .allSatisfy(template -> {
-                    assertThat(template.version()).isEqualTo(2);
+                    assertThat(template.version()).isEqualTo(3);
                     assertThat(template.section()).isNotBlank();
                     assertThat(template.content()).isNotBlank();
                 });
-        assertThat(repository.findAll().get("people-document.txt"))
-                .contains(":sellerName", ":buyerName")
+        assertThat(repository.findAll().get("parties-document.txt"))
+                .contains(":sellerDocumentAppearance", ":buyerDocumentAppearance")
                 .doesNotContain(":givenName");
     }
 
@@ -32,17 +32,17 @@ class CarSaleTemplateRepositoryTests {
     void validatesExactVariablesAndCanResetTemplate() {
         CarSaleTemplateRepository repository = repository();
         repository.initializeTemplates();
-        String original = repository.findAll().get("document.txt");
+        String original = repository.findAll().get("terms-document.txt");
 
-        assertThatThrownBy(() -> repository.save("document.txt", original.replace(":price", "")))
+        assertThatThrownBy(() -> repository.save("terms-document.txt", original.replace(":price", "")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(":price");
-        assertThatThrownBy(() -> repository.save("document.txt", original + " :invented"))
+        assertThatThrownBy(() -> repository.save("terms-document.txt", original + " :invented"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(":invented");
 
-        repository.save("document.txt", original + " Texto personalizado.");
-        assertThat(repository.reset("document.txt").usingDefault()).isTrue();
+        repository.save("terms-document.txt", original + " Texto personalizado.");
+        assertThat(repository.reset("terms-document.txt").usingDefault()).isTrue();
     }
 
     private CarSaleTemplateRepository repository() {

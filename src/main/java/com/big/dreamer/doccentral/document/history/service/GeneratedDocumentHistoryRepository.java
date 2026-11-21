@@ -1,6 +1,7 @@
 package com.big.dreamer.doccentral.document.history.service;
 
 import com.big.dreamer.doccentral.document.carsale.model.CarSaleDocumentRequest;
+import com.big.dreamer.doccentral.document.carsale.model.PersonDetails;
 import com.big.dreamer.doccentral.document.history.model.GeneratedDocumentMetadata;
 import com.big.dreamer.doccentral.document.mutual.model.MutualDocumentRequest;
 import com.big.dreamer.doccentral.document.marriage.model.MarriageDocumentRequest;
@@ -67,15 +68,13 @@ public class GeneratedDocumentHistoryRepository {
             Map<String, Object> draft) {
         GeneratedDocumentMetadata metadata = new GeneratedDocumentMetadata(
                 UUID.randomUUID().toString(),
-                2,
+                3,
                 CAR_SALE_TYPE,
                 fileName,
                 createdAt,
                 title(document, draft),
-                personName(draft, "personStates",
-                        fullName(document.buyer().givenName(), document.buyer().lastName())),
-                personName(draft, "vendorStates",
-                        fullName(document.seller().givenName(), document.seller().lastName())),
+                partyName(draft, "personStates", document.buyer()),
+                partyName(draft, "vendorStates", document.seller()),
                 vehicleName(document, draft),
                 document,
                 draft == null ? Map.of() : draft,
@@ -157,6 +156,18 @@ public class GeneratedDocumentHistoryRepository {
         String lastName = draftValue(draft, section, "apellido", "");
         String name = fullName(givenName, lastName);
         return name.isBlank() ? fallback : name;
+    }
+
+    private String partyName(
+            Map<String, Object> draft,
+            String section,
+            PersonDetails person) {
+        String companyName = draftValue(draft, section, "sociedad_nombre", "");
+        if (!companyName.isBlank()) return companyName;
+        if (person.company() != null && !person.company().legalName().isBlank()) {
+            return person.company().legalName();
+        }
+        return personName(draft, section, fullName(person.givenName(), person.lastName()));
     }
 
     private String draftValue(

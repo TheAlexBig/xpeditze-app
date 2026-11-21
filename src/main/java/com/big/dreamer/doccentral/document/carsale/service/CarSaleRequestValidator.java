@@ -24,6 +24,16 @@ public final class CarSaleRequestValidator {
                             "comprador.documento", "Debe ser diferente al DUI del vendedor.",
                             "vendedor.documento", "Debe ser diferente al DUI del comprador."));
         }
+        if (request.seller().company() != null
+                && request.buyer().company() != null
+                && normalizeIdentifier(request.seller().company().taxId())
+                .equals(normalizeIdentifier(request.buyer().company().taxId()))) {
+            throw new CarSaleRequestValidationException(
+                    "La sociedad compradora y la sociedad vendedora deben ser diferentes.",
+                    Map.of(
+                            "comprador.sociedad.nit", "Debe ser diferente al NIT de la sociedad vendedora.",
+                            "vendedor.sociedad.nit", "Debe ser diferente al NIT de la sociedad compradora."));
+        }
     }
 
     private static String normalizeText(String value) {
