@@ -16,10 +16,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -127,9 +129,9 @@ public class SavedVehicleRepository {
         return new SavedVehicle(
                 vehicle.id(),
                 cleanText(vehicle.placa()).toUpperCase(),
-                cleanText(vehicle.marca()),
-                cleanText(vehicle.modelo()),
-                cleanText(vehicle.color()),
+                normalizeCatalogText(vehicle.marca()),
+                normalizeCatalogText(vehicle.modelo()),
+                normalizeCatalogText(vehicle.color()),
                 cleanText(vehicle.fabricado()),
                 cleanText(vehicle.capacidad()),
                 cleanText(vehicle.unidad_capacidad()),
@@ -171,6 +173,25 @@ public class SavedVehicleRepository {
 
     private String cleanText(String value) {
         return value == null ? "" : value.trim().replaceAll("\\s+", " ");
+    }
+
+    private String normalizeCatalogText(String value) {
+        return Arrays.stream(cleanText(value).split(" "))
+                .filter(token -> !token.isBlank())
+                .map(this::normalizeCatalogToken)
+                .reduce((left, right) -> left + " " + right)
+                .orElse("");
+    }
+
+    private String normalizeCatalogToken(String token) {
+        if (token.matches(".*\\d.*") || token.contains("-")) {
+            return token.toUpperCase(Locale.ROOT);
+        }
+        if (token.matches("[A-ZÁÉÍÓÚÜÑ]{2,4}")) {
+            return token;
+        }
+        String lower = token.toLowerCase(Locale.ROOT);
+        return lower.isEmpty() ? lower : lower.substring(0, 1).toUpperCase() + lower.substring(1);
     }
 
     private String normalizePlate(String plate) {

@@ -41,12 +41,15 @@ class SavedVehicleRepositoryTests {
     @Test
     void savesAVehicleAndBuildsOptions() {
         SavedVehicle saved = repository.save(new SavedVehicle(
-                null, "P-123456", "Toyota", "Corolla Cross",
-                "Gris", "2022-01-01", "5", "ASS", "Propiedad", "Automóvil", "Sedán",
+                null, "P-123456", "  tOyOTA ", " cOrolla  cross ",
+                "gRIS", "2022-01-01", "5", "ASS", "Propiedad", "Automóvil", "Sedán",
                 "ABC123", "DEF456", "GHI789", null));
 
         assertThat(saved.id()).isEqualTo("P123456");
         assertThat(saved.rememberedAt()).isNotBlank();
+        assertThat(saved.marca()).isEqualTo("Toyota");
+        assertThat(saved.modelo()).isEqualTo("Corolla Cross");
+        assertThat(saved.color()).isEqualTo("Gris");
 
         VehicleOptions options = repository.findOptions();
         assertThat(options.colors()).containsExactly("Gris");
