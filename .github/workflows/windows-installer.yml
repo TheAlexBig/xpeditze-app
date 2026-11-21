@@ -36,13 +36,13 @@ jobs:
 
     steps:
       - name: Check out desktop backend
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: xpeditze-app
 
       - name: Check out React frontend
         id: frontend-checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: TheAlexBig/xpeditze-forms
           ref: ${{ inputs.frontend_ref }}
