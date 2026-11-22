@@ -172,7 +172,7 @@ jobs:
           subject-path: ${{ steps.release-assets.outputs.msi }}
 
       - name: Upload Windows installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: xpeditze-windows-msi-${{ inputs.version }}
           path: |
