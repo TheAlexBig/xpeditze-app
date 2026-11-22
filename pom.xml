@@ -13,7 +13,7 @@
 
     <groupId>com.big.dreamer</groupId>
     <artifactId>xpeditze</artifactId>
-    <version>1.0.25</version>
+    <version>1.0.26</version>
     <name>xpeditze</name>
     <description>Xpeditze legal document generation API</description>
 
