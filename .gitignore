@@ -35,3 +35,4 @@ build/
 ### License secrets and issued licenses ###
 license-private-key.pem
 *.license
+.env

@@ -158,13 +158,34 @@ gh workflow run "$workflow" \
   -f publish_release=true \
   -f "request_id=$request_id"
 
-run_url=""
-for _ in {1..10}; do
-  run_url="$(gh run list --repo "$app_repo" --workflow "$workflow" --limit 10 \
-    --json displayTitle,url \
-    --jq ".[] | select(.displayTitle | endswith(\"($request_id)\")) | .url" | head -n 1)"
-  [[ -n "$run_url" ]] && break
+run_details=""
+for _ in {1..30}; do
+  run_details="$(gh run list --repo "$app_repo" --workflow "$workflow" --limit 10 \
+    --json databaseId,displayTitle,url \
+    --jq ".[] | select(.displayTitle | endswith(\"($request_id)\")) | [.databaseId, .url] | @tsv" | head -n 1)"
+  [[ -n "$run_details" ]] && break
   sleep 2
 done
+[[ -n "$run_details" ]] || fail "Could not find dispatched workflow ($request_id)"
 
-printf '\nRelease: v%s\nWorkflow: %s\n' "$next_version" "${run_url:-queued ($request_id)}"
+run_id="${run_details%%$'\t'*}"
+run_url="${run_details#*$'\t'}"
+
+step "Installer workflow"
+printf 'Workflow: %s\n' "$run_url"
+gh run watch "$run_id" --repo "$app_repo" --exit-status
+
+attestation_conclusion="$(gh run view "$run_id" --repo "$app_repo" --json jobs \
+  --jq '[.jobs[].steps[] | select(.name == "Attest Windows installer provenance") | .conclusion][0]')"
+[[ "$attestation_conclusion" == "success" ]] ||
+  fail "Provenance attestation did not succeed (conclusion: ${attestation_conclusion:-missing})"
+
+step "Published release"
+release_tag="v$next_version"
+release_url="$(gh release view "$release_tag" --repo "$app_repo" \
+  --json assets,isDraft,isPrerelease,tagName,url \
+  --jq "select(.tagName == \"$release_tag\" and (.isDraft | not) and (.isPrerelease | not) and any(.assets[]; .name == \"Xpeditze-$next_version.msi\") and any(.assets[]; .name == \"SHA256SUMS.txt\")) | .url")"
+[[ -n "$release_url" ]] ||
+  fail "Release $release_tag is missing, unpublished, or does not contain the required assets"
+
+printf '\nRelease verified: %s\nWorkflow succeeded: %s\n' "$release_url" "$run_url"
