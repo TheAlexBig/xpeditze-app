@@ -34,7 +34,8 @@ class MarriageDocumentServiceTests {
 
         assertThat(service.assemble(request).sections()).extracting(section -> section.text())
                 .anySatisfy(text -> assertThat(text).contains(
-                        "ACTA PREMATRIMONIAL", "COMUNIDAD DIFERIDA", "HIJO UNO", "HIJO DOS"))
+                        "ACTA PREMATRIMONIAL", "COMUNIDAD DIFERIDA", "HIJO UNO", "HIJO DOS",
+                        "MADRE, EMPLEADA, del domicilio de San Salvador, departamento de San Salvador"))
                 .anySatisfy(text -> assertThat(text).contains(
                         "NÚMERO DOCE", "SÍ, QUIERO", "TESTIGO UNO", "HIJO UNO", "HIJO DOS"))
                 .anySatisfy(text -> assertThat(text).contains("HOJA DE CONTROL", "quince días hábiles"));

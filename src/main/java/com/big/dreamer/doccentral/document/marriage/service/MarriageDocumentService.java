@@ -127,7 +127,8 @@ public class MarriageDocumentService {
     }
 
     private String parent(MarriageParent parent) {
-        return parent.name() + ", " + parent.job() + ", del domicilio de " + parent.settlement();
+        return parent.name() + ", " + parent.job() + ", del domicilio de " + parent.settlement()
+                + ", departamento de " + parent.state();
     }
 
     private String documents(MarriageDocumentRequest request) {

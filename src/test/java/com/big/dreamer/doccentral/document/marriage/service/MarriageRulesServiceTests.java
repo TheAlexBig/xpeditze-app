@@ -145,8 +145,8 @@ class MarriageRulesServiceTests {
         String suffix = gender.equals("Femenino") ? "1" : "2";
         return new MarriageParty(person("NOMBRE", "APELLIDO", gender, "0000000" + suffix + "-" + suffix, "TREINTA"),
                 birthDate, status, "SALVADOREÑA", "San Salvador", "DUI",
-                new MarriageParent("MADRE", "EMPLEADA", "San Salvador"),
-                new MarriageParent("PADRE", "EMPLEADO", "San Salvador"),
+                new MarriageParent("MADRE", "EMPLEADA", "San Salvador", "San Salvador"),
+                new MarriageParent("PADRE", "EMPLEADO", "San Salvador", "San Salvador"),
                 new MarriageBirthCertificate("UNO", "DOS", "TRES", "Registro del Estado Familiar",
                         LocalDate.of(2026, 8, 1), "REGISTRADOR"), "",
                 false, true, false, false, false, false, true);
