@@ -92,8 +92,8 @@ public class GeneratedDocumentHistoryRepository {
             String createdAt,
             MutualDocumentRequest document,
             Map<String, Object> draft) {
-        String debtor = fullName(document.debtor().givenName(), document.debtor().lastName());
-        String creditor = fullName(document.creditor().givenName(), document.creditor().lastName());
+        String debtor = mutualPartyName(document.debtor());
+        String creditor = mutualPartyName(document.creditor());
         GeneratedDocumentMetadata metadata = new GeneratedDocumentMetadata(
                 UUID.randomUUID().toString(),
                 2,
@@ -186,6 +186,12 @@ public class GeneratedDocumentHistoryRepository {
 
     private String fullName(String givenName, String lastName) {
         return String.join(" ", givenName, lastName).trim();
+    }
+
+    private String mutualPartyName(PersonDetails person) {
+        return person.company() == null
+                ? fullName(person.givenName(), person.lastName())
+                : person.company().legalName();
     }
 
     private void write(List<GeneratedDocumentMetadata> documents) {

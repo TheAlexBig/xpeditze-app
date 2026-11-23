@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -81,6 +82,47 @@ class MutualFinancialCalculatorTests {
         assertThatThrownBy(() -> calculator.calculate(terms(MutualTermMode.DURATION, 10,
                 MutualTermUnit.DAYS, null, 0, "100", "0")))
                 .isInstanceOf(CarSaleRequestValidationException.class);
+    }
+
+    @Test
+    void validatesAndTotalsCustomInstallments() {
+        MutualFinancialPlan plan = calculator.calculate(customTerms(List.of(
+                new MutualCustomInstallment(LocalDate.parse("2026-02-01"),
+                        new BigDecimal("400"), new BigDecimal("20")),
+                new MutualCustomInstallment(LocalDate.parse("2026-04-15"),
+                        new BigDecimal("600"), new BigDecimal("10")))));
+
+        assertThat(plan.dueDate()).isEqualTo("2026-04-15");
+        assertThat(plan.capital()).isEqualByComparingTo("1000.00");
+        assertThat(plan.interest()).isEqualByComparingTo("30.00");
+        assertThat(plan.total()).isEqualByComparingTo("1030.00");
+        assertThat(plan.periodicity()).isEqualTo("Fechas y montos pactados individualmente");
+
+        assertThatThrownBy(() -> calculator.calculate(customTerms(List.of(
+                new MutualCustomInstallment(LocalDate.parse("2026-02-01"),
+                        new BigDecimal("999"), BigDecimal.ZERO)))))
+                .isInstanceOf(CarSaleRequestValidationException.class)
+                .satisfies(error -> assertThat(
+                        ((CarSaleRequestValidationException) error).fields()
+                                .get("condiciones.cuotas_personalizadas"))
+                        .contains("capital"));
+    }
+
+    private MutualTerms customTerms(List<MutualCustomInstallment> installments) {
+        MutualTerms base = terms(LocalDate.of(2026, 1, 1), MutualTermMode.DURATION,
+                12, MutualTermUnit.MONTHS, null, installments.size(), "1000", "0");
+        return new MutualTerms(base.amount(), base.term(), base.dueDate(), base.installmentCount(),
+                base.installmentAmount(), base.paymentBank(), base.paymentAccount(),
+                base.monthlyInterest(), base.defaultInterest(), base.fundsPurpose(),
+                base.billOfExchangeGuarantee(), base.guaranteeDueDate(), base.administrativeExpenses(),
+                base.specialDomicile(), base.signingPlace(), base.signingState(), base.signingDate(),
+                base.signingTime(), base.identifiesDebtor(), base.identifiesCreditor(),
+                base.numericAmount(), base.termMode(), base.termQuantity(), base.termUnit(),
+                base.startDate(), base.dueDateIso(), installments.size(), BigDecimal.ZERO,
+                base.instrumentType(), base.guaranteeType(), base.deedNumber(), base.deedNumberText(),
+                base.guaranteeDetails(), MutualPaymentMethod.BANK_TRANSFER, "",
+                MutualInterestPeriod.MONTHLY, MutualPaymentScheduleMode.CUSTOM,
+                installments, false, "");
     }
 
     private MutualTerms terms(MutualTermMode mode, Integer quantity, MutualTermUnit unit,

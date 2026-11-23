@@ -63,6 +63,8 @@ lock_root_version="$(node -p 'require(process.argv[1]).packages[""].version' "$f
 [[ "$app_version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] ||
   fail "Invalid current version: $app_version"
 
+node "$app_dir/scripts/check-legal-release.mjs"
+
 latest_tag="$(gh api "repos/$app_repo/releases/latest" --jq .tag_name)"
 [[ "$latest_tag" == "v$app_version" ]] ||
   fail "Latest release $latest_tag does not match source v$app_version"

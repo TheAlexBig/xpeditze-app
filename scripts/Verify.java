@@ -23,7 +23,7 @@ final class Verify {
         if (testClasses.length > 0) {
             command.add("-Dtest=" + String.join(",", testClasses));
         }
-        command.add("test");
+        command.add("verify");
 
         Instant startedAt = Instant.now();
         Process process = new ProcessBuilder(command)
@@ -37,13 +37,13 @@ final class Verify {
         if (status != 0) {
             Path log = Files.createTempFile("xpeditze-app-verificacion-", ".log");
             Files.writeString(log, output, StandardCharsets.UTF_8);
-            System.err.printf("FALLÓ: pruebas backend (%.1f s)%n", seconds);
+            System.err.printf("FALLÓ: pruebas o análisis estático backend (%.1f s)%n", seconds);
             System.err.println(lastLines(output, 25));
             System.err.println("Registro completo: " + log);
             System.exit(status);
         }
 
-        System.out.printf("OK: pruebas backend (%.1f s).%n", seconds);
+        System.out.printf("OK: pruebas y análisis estático backend (%.1f s).%n", seconds);
     }
 
     private static boolean isWindows() {

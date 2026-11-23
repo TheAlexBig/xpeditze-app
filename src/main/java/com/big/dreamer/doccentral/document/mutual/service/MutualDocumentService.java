@@ -1,6 +1,7 @@
 package com.big.dreamer.doccentral.document.mutual.service;
 
 import com.big.dreamer.doccentral.document.carsale.model.CarDetails;
+import com.big.dreamer.doccentral.document.carsale.model.CompanyDetails;
 import com.big.dreamer.doccentral.document.carsale.model.PersonDetails;
 import com.big.dreamer.doccentral.document.mutual.model.MutualDocumentRequest;
 import com.big.dreamer.doccentral.document.mutual.model.MutualTerms;
@@ -65,16 +66,18 @@ public class MutualDocumentService {
         PersonDetails creditor = request.creditor();
         MutualTerms terms = request.terms();
         MutualRulesService.Resolution resolution = rules.resolve(request);
-        String debtorRole = female(debtor) ? "LA DEUDORA" : "EL DEUDOR";
-        String creditorRole = female(creditor) ? "LA ACREEDORA" : "EL ACREEDOR";
+        String debtorRole = debtor.company() != null ? "LA SOCIEDAD DEUDORA"
+                : female(debtor) ? "LA DEUDORA" : "EL DEUDOR";
+        String creditorRole = creditor.company() != null ? "LA SOCIEDAD ACREEDORA"
+                : female(creditor) ? "LA ACREEDORA" : "EL ACREEDOR";
         String notary = fullName(request.legalAgent().givenName(), request.legalAgent().lastName());
         String notaryTitle = "Femenino".equalsIgnoreCase(request.legalAgent().gender()) ? "NOTARIA" : "NOTARIO";
         String clauses = clauses(templates, request, resolution);
         String contract = resolution.includeAuthentic()
                 ? render(templates, "contract.txt", Map.ofEntries(
-                    Map.entry("debtor", person(templates, debtor)),
+                    Map.entry("debtor", person(templates, debtor, "mi")),
                     Map.entry("debtorRole", debtorRole),
-                    Map.entry("creditor", person(templates, creditor)),
+                    Map.entry("creditor", person(templates, creditor, "mi")),
                     Map.entry("creditorRole", creditorRole),
                     Map.entry("mutualType", mutualType(resolution.guaranteeType())),
                     Map.entry("clauses", clauses),
@@ -118,9 +121,12 @@ public class MutualDocumentService {
         MutualTerms terms = request.terms();
         PersonDetails debtor = request.debtor();
         PersonDetails creditor = request.creditor();
-        String debtorText = female(debtor) ? "la deudora" : "el deudor";
-        String fromCreditor = female(creditor) ? "de la acreedora" : "del acreedor";
-        String forCreditor = female(creditor) ? "a favor de la acreedora" : "a favor del acreedor";
+        String debtorText = debtor.company() != null ? "la sociedad deudora"
+                : female(debtor) ? "la deudora" : "el deudor";
+        String fromCreditor = creditor.company() != null ? "de la sociedad acreedora"
+                : female(creditor) ? "de la acreedora" : "del acreedor";
+        String forCreditor = creditor.company() != null ? "a favor de la sociedad acreedora"
+                : female(creditor) ? "a favor de la acreedora" : "a favor del acreedor";
         String installments = "UNO".equalsIgnoreCase(terms.installmentCount())
                 || "UNA".equalsIgnoreCase(terms.installmentCount())
                 ? "UNA CUOTA"
@@ -136,10 +142,8 @@ public class MutualDocumentService {
                 Map.entry("dueDate", plan == null ? terms.dueDate() : formatDate(plan.dueDate())),
                 Map.entry("installments", installments),
                 Map.entry("installmentAmount", plan == null
-                        ? currency(terms.installmentAmount()) : installmentDescription(plan)),
-                Map.entry("paymentAccount", terms.paymentAccount()),
-                Map.entry("paymentBank", terms.paymentBank()),
-                Map.entry("creditorName", fullName(creditor)))));
+                        ? currency(terms.installmentAmount()) : installmentDescription(plan, terms)),
+                Map.entry("paymentInstructions", paymentInstructions(terms, creditor)))));
         if (!blank(terms.monthlyInterest()) || !blank(terms.defaultInterest())) {
             clauses.add(render(templates, "interest.txt", Map.ofEntries(
                     Map.entry("interestTerms", interestTerms(terms)),
@@ -153,7 +157,12 @@ public class MutualDocumentService {
                     Map.entry("interest", money(plan.interest())),
                     Map.entry("total", money(plan.total())),
                     Map.entry("periodicity", legalPeriodicity(plan)),
-                    Map.entry("schedule", scheduleSummary(plan)))));
+                    Map.entry("schedule", scheduleSummary(plan, terms)))));
+        }
+        if (terms.allowsEarlyPayments()) {
+            clauses.add(render(templates, "early-payment.txt", Map.ofEntries(
+                    Map.entry("number", number(clauses.size() + 1)),
+                    Map.entry("earlyPaymentTerms", terms.earlyPaymentTerms()))));
         }
         clauses.add(render(templates, "purpose.txt", Map.ofEntries(
                 Map.entry("number", number(clauses.size() + 1)),
@@ -179,7 +188,7 @@ public class MutualDocumentService {
             values.put("number", number(clauses.size() + 1));
             values.put("guaranteeDetails", value(terms.guaranteeDetails(), ""));
             if (request.guarantor() != null) {
-                values.put("guarantor", person(templates, request.guarantor()));
+                values.put("guarantor", person(templates, request.guarantor(), "su"));
             }
             if (request.vehiclePledge() != null) {
                 CarDetails vehicle = request.vehiclePledge().vehicle();
@@ -215,12 +224,18 @@ public class MutualDocumentService {
         return String.join(" ", clauses);
     }
 
-    private String scheduleSummary(MutualFinancialPlan plan) {
+    private String scheduleSummary(MutualFinancialPlan plan, MutualTerms terms) {
         String firstDueDate = formatDate(plan.installments().getFirst().dueDate());
         if (plan.installmentCount() == 1) {
             return "La única cuota vencerá el " + firstDueDate;
         }
         String lastDueDate = formatDate(plan.installments().getLast().dueDate());
+        if (terms.effectivePaymentScheduleMode()
+                == com.big.dreamer.doccentral.document.mutual.model.MutualPaymentScheduleMode.CUSTOM) {
+            return "La primera cuota vencerá el " + firstDueDate
+                    + "; las cuotas sucesivas se pagarán en las fechas y por los montos individualmente pactados, "
+                    + "y la última vencerá el " + lastDueDate;
+        }
         return "La primera cuota vencerá el " + firstDueDate
                 + "; las cuotas sucesivas vencerán conforme a esa periodicidad hasta la última, que vencerá el "
                 + lastDueDate;
@@ -236,7 +251,11 @@ public class MutualDocumentService {
         return "en " + Character.toLowerCase(periodicity.charAt(0)) + periodicity.substring(1);
     }
 
-    private String installmentDescription(MutualFinancialPlan plan) {
+    private String installmentDescription(MutualFinancialPlan plan, MutualTerms terms) {
+        if (terms.effectivePaymentScheduleMode()
+                == com.big.dreamer.doccentral.document.mutual.model.MutualPaymentScheduleMode.CUSTOM) {
+            return "MONTO VARIABLE CONFORME AL PLAN DE PAGOS";
+        }
         BigDecimal first = plan.installments().getFirst().total();
         BigDecimal last = plan.installments().getLast().total();
         return first.compareTo(last) == 0
@@ -253,8 +272,11 @@ public class MutualDocumentService {
                     + "no se agregará otro interés ordinario a dichas cuotas.");
         }
         if (!blank(terms.defaultInterest())) {
+            String period = terms.effectiveDefaultInterestPeriod()
+                    == com.big.dreamer.doccentral.document.mutual.model.MutualInterestPeriod.ANNUAL
+                    ? "anual" : "mensual";
             provisions.add("En caso de mora, se aplicará un interés moratorio de "
-                    + terms.defaultInterest() + " por ciento mensual sobre el capital vencido, "
+                    + terms.defaultInterest() + " por ciento " + period + " sobre el capital vencido, "
                     + "sin exceder la tasa máxima legal vigente.");
         }
         return String.join(" ", provisions);
@@ -277,14 +299,42 @@ public class MutualDocumentService {
         return LegalDocumentText.money(value);
     }
 
-    private String person(Map<String, String> templates, PersonDetails person) {
-        return render(templates, "person.txt", personValues(person));
+    private String paymentInstructions(MutualTerms terms, PersonDetails creditor) {
+        String creditorName = creditor.company() == null
+                ? fullName(creditor) : creditor.company().legalName();
+        return switch (terms.effectivePaymentMethod()) {
+            case BANK_TRANSFER -> "El pago se depositará en la cuenta " + terms.paymentAccount()
+                    + " del " + terms.paymentBank() + ", a nombre de " + creditorName;
+            case CASH -> "El pago se realizará en efectivo en " + terms.paymentDetails();
+            case OTHER -> "El pago se realizará " + terms.paymentDetails();
+        };
+    }
+
+    private String person(Map<String, String> templates, PersonDetails person, String possessive) {
+        String base = render(templates, "person.txt", personValues(person));
+        return person.company() == null ? base
+                : base + ", " + companyRepresentation(person.company(), possessive)
+                + ", personería que acredito mediante " + person.company().authorityEvidence();
     }
 
     private String identified(Map<String, String> templates, PersonDetails person, String known) {
         Map<String, String> values = new java.util.LinkedHashMap<>(personValues(person));
         values.put("knowledge", NotarialIdentificationText.knowledge(known));
-        return render(templates, "identified-person.txt", values);
+        String base = render(templates, "identified-person.txt", values);
+        return person.company() == null ? base
+                : base + ", " + companyRepresentation(person.company(), "su")
+                + ", personería que acredita mediante " + person.company().authorityEvidence();
+    }
+
+    private String companyRepresentation(CompanyDetails company, String possessive) {
+        String abbreviation = blank(company.abbreviatedName()) ? ""
+                : ", que se puede abreviar " + company.abbreviatedName();
+        return "actuando en " + possessive + " calidad de " + company.representativeCapacity()
+                + " de la sociedad " + company.legalName() + abbreviation
+                + ", persona jurídica, de nacionalidad " + company.nationality()
+                + ", del domicilio de " + company.settlement()
+                + ", departamento de " + company.state()
+                + ", con Número de Identificación Tributaria " + company.taxId();
     }
 
     private Map<String, String> personValues(PersonDetails person) {

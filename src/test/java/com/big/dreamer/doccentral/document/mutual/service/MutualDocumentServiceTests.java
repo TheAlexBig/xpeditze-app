@@ -3,6 +3,7 @@ package com.big.dreamer.doccentral.document.mutual.service;
 import com.big.dreamer.doccentral.document.carsale.model.LegalAgentDetails;
 import com.big.dreamer.doccentral.document.carsale.model.CarDetails;
 import com.big.dreamer.doccentral.document.carsale.model.PersonDetails;
+import com.big.dreamer.doccentral.document.carsale.model.CompanyDetails;
 import com.big.dreamer.doccentral.document.mutual.model.MutualDocumentRequest;
 import com.big.dreamer.doccentral.document.mutual.model.MutualTerms;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -17,6 +18,9 @@ import com.big.dreamer.doccentral.document.mutual.model.MutualGuaranteeType;
 import com.big.dreamer.doccentral.document.mutual.model.MutualTermMode;
 import com.big.dreamer.doccentral.document.mutual.model.MutualTermUnit;
 import com.big.dreamer.doccentral.document.mutual.model.MutualVehiclePledge;
+import com.big.dreamer.doccentral.document.mutual.model.MutualInterestPeriod;
+import com.big.dreamer.doccentral.document.mutual.model.MutualPaymentMethod;
+import com.big.dreamer.doccentral.document.mutual.model.MutualPaymentScheduleMode;
 import com.big.dreamer.doccentral.storage.ApplicationDirectories;
 import com.big.dreamer.doccentral.document.mutual.template.MutualTemplateRepository;
 import com.big.dreamer.doccentral.document.render.LegalDocumentRenderer;
@@ -179,6 +183,66 @@ class MutualDocumentServiceTests {
         assertThat(content.contract()).contains("CONTRATO DE MUTUO CON GARANTÍA PRENDARIA",
                 "GARANTÍA PRENDARIA", "prenda sin desplazamiento",
                 "P DOS NUEVE UNO CUATRO", "Registro de Garantías Mobiliarias");
+    }
+
+    @Test
+    void rendersCorporateCreditorCashPaymentAndAnnualDefaultInterest() {
+        MutualDocumentRequest base = request(false);
+        CompanyDetails company = new CompanyDetails(
+                "CRÉDITO EJEMPLO, SOCIEDAD ANÓNIMA DE CAPITAL VARIABLE",
+                "CRÉDITO EJEMPLO", "SALVADOREÑA", "SAN SALVADOR",
+                "Distrito de San Salvador", "CERO SEIS UNO CUATRO",
+                "ADMINISTRADOR ÚNICO POR SIETE AÑOS", "CREDENCIAL INSCRITA AL NÚMERO VEINTICINCO");
+        PersonDetails representative = new PersonDetails(
+                "Luis Arístides", "Díaz Madrid", "La Libertad",
+                "Santa Tecla", "CERO CUATRO-DOS", "Masculino",
+                "TREINTA Y SEIS", "Empresario", company);
+        MutualTerms terms = withEarlyPayments(withPayment(base.terms(), MutualPaymentMethod.CASH,
+                "LAS OFICINAS DE LA SOCIEDAD ACREEDORA", MutualInterestPeriod.ANNUAL));
+
+        MutualDocumentContent content = service.assemble(new MutualDocumentRequest(
+                base.debtor(), representative, terms, base.legalAgent()));
+
+        assertThat(content.contract())
+                .contains("LA SOCIEDAD ACREEDORA", "CRÉDITO EJEMPLO",
+                        "actuando en mi calidad de ADMINISTRADOR ÚNICO",
+                        "personería que acredito mediante CREDENCIAL",
+                        "El pago se realizará en efectivo en LAS OFICINAS",
+                        "UNO por ciento anual", "ABONOS ANTICIPADOS",
+                        "directamente al capital sin penalización");
+        assertThat(content.authentic())
+                .contains("actuando en su calidad de ADMINISTRADOR ÚNICO",
+                        "personería que acredita mediante CREDENCIAL");
+    }
+
+    private MutualTerms withPayment(MutualTerms terms, MutualPaymentMethod method,
+                                    String details, MutualInterestPeriod period) {
+        return new MutualTerms(terms.amount(), terms.term(), terms.dueDate(), terms.installmentCount(),
+                terms.installmentAmount(), terms.paymentBank(), terms.paymentAccount(),
+                terms.monthlyInterest(), terms.defaultInterest(), terms.fundsPurpose(),
+                terms.billOfExchangeGuarantee(), terms.guaranteeDueDate(), terms.administrativeExpenses(),
+                terms.specialDomicile(), terms.signingPlace(), terms.signingState(), terms.signingDate(),
+                terms.signingTime(), terms.identifiesDebtor(), terms.identifiesCreditor(),
+                terms.numericAmount(), terms.termMode(), terms.termQuantity(), terms.termUnit(),
+                terms.startDate(), terms.dueDateIso(), terms.numericInstallmentCount(),
+                terms.numericMonthlyInterest(), terms.instrumentType(), terms.guaranteeType(),
+                terms.deedNumber(), terms.deedNumberText(), terms.guaranteeDetails(), method, details, period);
+    }
+
+    private MutualTerms withEarlyPayments(MutualTerms terms) {
+        return new MutualTerms(terms.amount(), terms.term(), terms.dueDate(), terms.installmentCount(),
+                terms.installmentAmount(), terms.paymentBank(), terms.paymentAccount(),
+                terms.monthlyInterest(), terms.defaultInterest(), terms.fundsPurpose(),
+                terms.billOfExchangeGuarantee(), terms.guaranteeDueDate(), terms.administrativeExpenses(),
+                terms.specialDomicile(), terms.signingPlace(), terms.signingState(), terms.signingDate(),
+                terms.signingTime(), terms.identifiesDebtor(), terms.identifiesCreditor(),
+                terms.numericAmount(), terms.termMode(), terms.termQuantity(), terms.termUnit(),
+                terms.startDate(), terms.dueDateIso(), terms.numericInstallmentCount(),
+                terms.numericMonthlyInterest(), terms.instrumentType(), terms.guaranteeType(),
+                terms.deedNumber(), terms.deedNumberText(), terms.guaranteeDetails(),
+                terms.paymentMethod(), terms.paymentDetails(), terms.defaultInterestPeriod(),
+                MutualPaymentScheduleMode.CALCULATED, java.util.List.of(), true,
+                "Los abonos se aplicarán directamente al capital sin penalización");
     }
 
     private MutualDocumentRequest request(boolean guarantee) {

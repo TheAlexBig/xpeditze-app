@@ -2,7 +2,8 @@
 
 Xpeditze is an offline-first Windows desktop application for generating
 legal documents in El Salvador. Its guided Spanish workflows prepare vehicle
-purchase-and-sale agreements and simple mutual agreements in Word and PDF.
+purchase-and-sale agreements, mutual agreements, and marriage files in Word
+and PDF.
 The packaged application runs on the user's computer without a cloud account
 or external database.
 
@@ -26,6 +27,14 @@ Xpeditze is licensed under the [Apache License 2.0](LICENSE). See the
 mvn spring-boot:run
 ```
 
+Run the canonical backend verification before opening a pull request. It runs
+the tests and maximum-effort SpotBugs static analysis; high-priority findings
+fail the check.
+
+```bash
+java scripts/Verify.java
+```
+
 The server binds only to `127.0.0.1`. During React development, Vite proxies
 `/api` requests to the backend at `http://127.0.0.1:8080`. Set
 `DOC_WEB_ORIGINS` only when a different local development origin is needed.
@@ -36,6 +45,7 @@ The server binds only to `127.0.0.1`. During React development, Vite proxies
 | --- | --- | --- |
 | Vehicle sale | `POST /api/v1/documents/car-sale` | `POST /api/v1/documents/car-sale/history` |
 | Mutual agreement | `POST /api/v1/documents/mutual` | `POST /api/v1/documents/mutual/history` |
+| Marriage file | — | `POST /api/v1/documents/marriage/history` |
 
 Pass `?format=docx` or `?format=pdf`. Tracked endpoints receive
 `{"documento": {...}, "borrador": {...}}`, store the generated file, and
@@ -58,6 +68,15 @@ The mutual-agreement request uses `deudor`, `acreedor`, `condiciones`, and
 payment bank/account, optional interest and default interest, funds purpose,
 optional bill-of-exchange guarantee, optional administrative expenses,
 special jurisdiction, signing location/date/time, and notarial identification.
+It also supports represented companies, calculated or individually agreed
+installments, bank/cash/other payment arrangements, early-payment terms, and
+monthly or annual default interest.
+
+The marriage request covers both parties, parents, recent birth certificates,
+witnesses, the property regime, prior-marriage evidence, and conditional proxy,
+interpreter, capitulation, and recognized-child details. The generated file
+contains the premarital act, marriage deed, and an internal registration-control
+sheet.
 
 Missing required fields return HTTP `400` with a field-level validation map.
 Generated Word and PDF files are returned as downloads and are also saved
@@ -101,11 +120,11 @@ access to the filesystem:
 - export and restore a portable ZIP backup of saved data, templates, history,
   and generated documents;
 - search, edit, and remove saved people;
-- edit car-sale templates with required-placeholder validation and restore the
-  bundled defaults; and
+- edit templates for every document type with required-placeholder validation
+  and restore the bundled defaults; and
 - display the installed version and check GitHub for a newer release.
 
-Document history includes vehicle sales and mutual agreements. It can be
+Document history includes vehicle sales, mutual agreements, and marriages. It can be
 filtered by dates, document type, names, DUI, vehicle, plate, bank, account,
 or responsible person. Historical Word/PDF files can be downloaded again and
 their saved draft opens in the correct workflow. In-progress forms use an
@@ -129,9 +148,9 @@ document workflow. Saved people, agents, and vehicle suggestions are managed
 from the global data view. People are reusable as buyer, seller, debtor, or
 creditor. Car-sale template text is presented as an ordered
 set of blocks whose combination produces the final document.
-Mutual-agreement text is currently implemented in its document service and is
-listed for notarial review in [LEGAL_REVIEW.md](LEGAL_REVIEW.md); editable
-mutual template blocks remain follow-up work.
+All document types use versioned editable template blocks. Legal wording that
+still requires product-owner or notarial confirmation is listed in
+[LEGAL_REVIEW.md](LEGAL_REVIEW.md).
 The logs-folder action supports the Windows desktop API, `open` on macOS, and
 `xdg-open` when running the backend from a Linux desktop.
 

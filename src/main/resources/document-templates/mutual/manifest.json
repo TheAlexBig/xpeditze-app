@@ -1,10 +1,11 @@
 {
-  "version": 2,
+  "version": 4,
   "templates": [
     {"name":"contract.txt","label":"Contrato","section":"Contrato","condition":""},
     {"name":"principal.txt","label":"Capital mutuado","section":"Contrato","condition":""},
     {"name":"payment.txt","label":"Plazo y forma de pago","section":"Contrato","condition":""},
     {"name":"payment-schedule.txt","label":"Plan de pagos","section":"Contrato","condition":"Se incluye con el cálculo estructurado."},
+    {"name":"early-payment.txt","label":"Abonos anticipados","section":"Contrato","condition":"Se incluye cuando las partes pactan abonos anticipados."},
     {"name":"interest.txt","label":"Intereses","section":"Contrato","condition":"Se incluye cuando se indica interés mensual o por mora."},
     {"name":"purpose.txt","label":"Origen y destino de los fondos","section":"Contrato","condition":""},
     {"name":"guarantee.txt","label":"Garantía","section":"Contrato","condition":"Se incluye cuando se suscribe una letra de cambio."},

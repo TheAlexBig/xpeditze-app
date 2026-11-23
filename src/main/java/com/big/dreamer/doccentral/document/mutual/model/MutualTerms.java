@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public record MutualTerms(
         @JsonProperty("monto") @NotBlank String amount,
@@ -39,7 +40,14 @@ public record MutualTerms(
         @JsonProperty("tipo_garantia") MutualGuaranteeType guaranteeType,
         @JsonProperty("numero_escritura") Integer deedNumber,
         @JsonProperty("numero_escritura_texto") String deedNumberText,
-        @JsonProperty("detalles_garantia") String guaranteeDetails) {
+        @JsonProperty("detalles_garantia") String guaranteeDetails,
+        @JsonProperty("metodo_pago") MutualPaymentMethod paymentMethod,
+        @JsonProperty("detalles_pago") String paymentDetails,
+        @JsonProperty("periodo_interes_mora") MutualInterestPeriod defaultInterestPeriod,
+        @JsonProperty("modalidad_plan_pagos") MutualPaymentScheduleMode paymentScheduleMode,
+        @JsonProperty("cuotas_personalizadas") List<@jakarta.validation.Valid MutualCustomInstallment> customInstallments,
+        @JsonProperty("permite_abonos_anticipados") boolean allowsEarlyPayments,
+        @JsonProperty("condiciones_abonos_anticipados") String earlyPaymentTerms) {
 
     public MutualTerms(String amount, String term, String dueDate, String installmentCount,
                        String installmentAmount, String paymentBank, String paymentAccount,
@@ -52,7 +60,52 @@ public record MutualTerms(
                 monthlyInterest, defaultInterest, fundsPurpose, billOfExchangeGuarantee,
                 guaranteeDueDate, administrativeExpenses, specialDomicile, signingPlace,
                 signingState, signingDate, signingTime, identifiesDebtor, identifiesCreditor,
-                null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, false, null);
+    }
+
+    public MutualTerms(String amount, String term, String dueDate, String installmentCount,
+                       String installmentAmount, String paymentBank, String paymentAccount,
+                       String monthlyInterest, String defaultInterest, String fundsPurpose,
+                       boolean billOfExchangeGuarantee, String guaranteeDueDate,
+                       String administrativeExpenses, String specialDomicile, String signingPlace,
+                       String signingState, String signingDate, String signingTime,
+                       String identifiesDebtor, String identifiesCreditor, BigDecimal numericAmount,
+                       MutualTermMode termMode, Integer termQuantity, MutualTermUnit termUnit,
+                       LocalDate startDate, LocalDate dueDateIso, Integer numericInstallmentCount,
+                       BigDecimal numericMonthlyInterest, MutualInstrumentType instrumentType,
+                       MutualGuaranteeType guaranteeType, Integer deedNumber, String deedNumberText,
+                       String guaranteeDetails) {
+        this(amount, term, dueDate, installmentCount, installmentAmount, paymentBank, paymentAccount,
+                monthlyInterest, defaultInterest, fundsPurpose, billOfExchangeGuarantee,
+                guaranteeDueDate, administrativeExpenses, specialDomicile, signingPlace, signingState,
+                signingDate, signingTime, identifiesDebtor, identifiesCreditor, numericAmount, termMode,
+                termQuantity, termUnit, startDate, dueDateIso, numericInstallmentCount,
+                numericMonthlyInterest, instrumentType, guaranteeType, deedNumber, deedNumberText,
+                guaranteeDetails, null, null, null, null, null, false, null);
+    }
+
+    public MutualTerms(String amount, String term, String dueDate, String installmentCount,
+                       String installmentAmount, String paymentBank, String paymentAccount,
+                       String monthlyInterest, String defaultInterest, String fundsPurpose,
+                       boolean billOfExchangeGuarantee, String guaranteeDueDate,
+                       String administrativeExpenses, String specialDomicile, String signingPlace,
+                       String signingState, String signingDate, String signingTime,
+                       String identifiesDebtor, String identifiesCreditor, BigDecimal numericAmount,
+                       MutualTermMode termMode, Integer termQuantity, MutualTermUnit termUnit,
+                       LocalDate startDate, LocalDate dueDateIso, Integer numericInstallmentCount,
+                       BigDecimal numericMonthlyInterest, MutualInstrumentType instrumentType,
+                       MutualGuaranteeType guaranteeType, Integer deedNumber, String deedNumberText,
+                       String guaranteeDetails, MutualPaymentMethod paymentMethod, String paymentDetails,
+                       MutualInterestPeriod defaultInterestPeriod) {
+        this(amount, term, dueDate, installmentCount, installmentAmount, paymentBank, paymentAccount,
+                monthlyInterest, defaultInterest, fundsPurpose, billOfExchangeGuarantee,
+                guaranteeDueDate, administrativeExpenses, specialDomicile, signingPlace, signingState,
+                signingDate, signingTime, identifiesDebtor, identifiesCreditor, numericAmount, termMode,
+                termQuantity, termUnit, startDate, dueDateIso, numericInstallmentCount,
+                numericMonthlyInterest, instrumentType, guaranteeType, deedNumber, deedNumberText,
+                guaranteeDetails, paymentMethod, paymentDetails, defaultInterestPeriod,
+                null, null, false, null);
     }
 
     public boolean hasStructuredCalculation() {
@@ -66,5 +119,17 @@ public record MutualTerms(
     public MutualGuaranteeType effectiveGuaranteeType() {
         if (guaranteeType != null) return guaranteeType;
         return billOfExchangeGuarantee ? MutualGuaranteeType.MOVABLE : MutualGuaranteeType.NONE;
+    }
+
+    public MutualPaymentMethod effectivePaymentMethod() {
+        return paymentMethod == null ? MutualPaymentMethod.BANK_TRANSFER : paymentMethod;
+    }
+
+    public MutualInterestPeriod effectiveDefaultInterestPeriod() {
+        return defaultInterestPeriod == null ? MutualInterestPeriod.MONTHLY : defaultInterestPeriod;
+    }
+
+    public MutualPaymentScheduleMode effectivePaymentScheduleMode() {
+        return paymentScheduleMode == null ? MutualPaymentScheduleMode.CALCULATED : paymentScheduleMode;
     }
 }

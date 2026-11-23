@@ -1,5 +1,10 @@
 # Legal Review Follow-Ups
 
+These follow-ups are unresolved until the responsible notary records approval
+for the matching template catalog version in
+`legal-release-approvals.json`. The release preflight enforces that record; see
+`../docs/LEGAL_RELEASE_GATE.md` for the required evidence and renewal rules.
+
 The vehicle-sale document text was carried forward from the original
 implementation. The modernization intentionally does not reinterpret legal
 language.

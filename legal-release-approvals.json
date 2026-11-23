@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "documents": {
+    "car-sale": {
+      "templateVersion": 3,
+      "status": "pending",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "notes": "Pendiente confirmar los puntos de compraventa registrados en LEGAL_REVIEW.md."
+    },
+    "mutual": {
+      "templateVersion": 4,
+      "status": "pending",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "notes": "Pendiente revisión integral de cláusulas por el notario responsable."
+    },
+    "marriage": {
+      "templateVersion": 2,
+      "status": "pending",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "notes": "Pendiente constancia de revisión del expediente compuesto y sus variantes."
+    }
+  }
+}

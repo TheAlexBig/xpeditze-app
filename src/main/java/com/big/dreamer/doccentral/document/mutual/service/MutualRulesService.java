@@ -20,6 +20,32 @@ public class MutualRulesService {
     public Resolution resolve(MutualDocumentRequest request) {
         MutualInstrumentType instrument = request.terms().effectiveInstrumentType();
         MutualGuaranteeType guarantee = request.terms().effectiveGuaranteeType();
+        if (request.terms().effectivePaymentMethod()
+                == com.big.dreamer.doccentral.document.mutual.model.MutualPaymentMethod.BANK_TRANSFER
+                && (blank(request.terms().paymentBank()) || blank(request.terms().paymentAccount()))) {
+            invalid("condiciones.metodo_pago", "Indique el banco y la cuenta para el pago.");
+        }
+        if (request.terms().effectivePaymentMethod()
+                != com.big.dreamer.doccentral.document.mutual.model.MutualPaymentMethod.BANK_TRANSFER
+                && blank(request.terms().paymentDetails())) {
+            invalid("condiciones.detalles_pago", "Describa el lugar y la forma de pago.");
+        }
+        if (request.debtor().company() != null && request.creditor().company() != null
+                && normalize(request.debtor().company().taxId())
+                .equals(normalize(request.creditor().company().taxId()))) {
+            invalid("acreedor.sociedad.nit", "La sociedad acreedora debe ser diferente de la deudora.");
+        }
+        if (request.terms().effectivePaymentScheduleMode()
+                == com.big.dreamer.doccentral.document.mutual.model.MutualPaymentScheduleMode.CUSTOM
+                && request.terms().numericMonthlyInterest() != null
+                && request.terms().numericMonthlyInterest().signum() > 0) {
+            invalid("condiciones.tasa_interes_mensual",
+                    "Las cuotas personalizadas deben indicar su interés individualmente.");
+        }
+        if (request.terms().allowsEarlyPayments() && blank(request.terms().earlyPaymentTerms())) {
+            invalid("condiciones.condiciones_abonos_anticipados",
+                    "Describa cómo se aplicarán los abonos anticipados.");
+        }
         if (guarantee == MutualGuaranteeType.MORTGAGE && instrument != MutualInstrumentType.PUBLIC_DEED) {
             invalid("condiciones.tipo_instrumento", "La garantía hipotecaria requiere escritura pública.");
         }
@@ -51,6 +77,10 @@ public class MutualRulesService {
 
     private boolean blank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private String normalize(String value) {
+        return value == null ? "" : value.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
     }
 
     private void invalid(String field, String message) {
