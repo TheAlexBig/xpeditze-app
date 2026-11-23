@@ -122,7 +122,7 @@ public class GeneratedDocumentHistoryRepository {
         String partyOne = fullName(document.partyOne().person().givenName(), document.partyOne().person().lastName());
         String partyTwo = fullName(document.partyTwo().person().givenName(), document.partyTwo().person().lastName());
         GeneratedDocumentMetadata metadata = new GeneratedDocumentMetadata(
-                UUID.randomUUID().toString(), 2, MARRIAGE_TYPE, fileName, createdAt,
+                UUID.randomUUID().toString(), 3, MARRIAGE_TYPE, fileName, createdAt,
                 "Matrimonio - " + partyOne + " / " + partyTwo,
                 partyOne, partyTwo, "", null,
                 draft == null ? Map.of() : draft, null, document);

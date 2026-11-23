@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 public record MarriageParent(
         @JsonProperty("nombre") @NotBlank String name,
         @JsonProperty("oficio") @NotBlank String job,
-        @JsonProperty("departamento") @NotBlank String state,
+        @JsonProperty("pais") @NotBlank String country,
+        @JsonProperty("departamento") String state,
         @JsonProperty("domicilio") @NotBlank String settlement) {
 }
