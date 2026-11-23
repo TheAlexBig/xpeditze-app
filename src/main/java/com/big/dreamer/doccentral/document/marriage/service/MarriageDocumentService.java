@@ -127,8 +127,10 @@ public class MarriageDocumentService {
     }
 
     private String parent(MarriageParent parent) {
-        return parent.name() + ", " + parent.job() + ", del domicilio de " + parent.settlement()
-                + ", departamento de " + parent.state();
+        String domicile = parent.country().equalsIgnoreCase("El Salvador")
+                ? parent.settlement() + ", departamento de " + parent.state()
+                : parent.settlement() + ", " + parent.country();
+        return parent.name() + ", " + parent.job() + ", del domicilio de " + domicile;
     }
 
     private String documents(MarriageDocumentRequest request) {
