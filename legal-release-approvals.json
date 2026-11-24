@@ -3,24 +3,24 @@
   "documents": {
     "car-sale": {
       "templateVersion": 3,
-      "status": "pending",
-      "reviewedBy": "",
-      "reviewedAt": "",
-      "notes": "Pendiente confirmar los puntos de compraventa registrados en LEGAL_REVIEW.md."
+      "status": "approved",
+      "reviewedBy": "Alex Valladares",
+      "reviewedAt": "2026-11-23",
+      "notes": "Revisión propia confirmada para compraventa y los puntos registrados en LEGAL_REVIEW.md."
     },
     "mutual": {
       "templateVersion": 4,
-      "status": "pending",
-      "reviewedBy": "",
-      "reviewedAt": "",
-      "notes": "Pendiente revisión integral de cláusulas por el notario responsable."
+      "status": "approved",
+      "reviewedBy": "Alex Valladares",
+      "reviewedAt": "2026-11-23",
+      "notes": "Revisión propia confirmada para las cláusulas y variantes del mutuo."
     },
     "marriage": {
       "templateVersion": 2,
-      "status": "pending",
-      "reviewedBy": "",
-      "reviewedAt": "",
-      "notes": "Pendiente constancia de revisión del expediente compuesto y sus variantes."
+      "status": "approved",
+      "reviewedBy": "Alex Valladares",
+      "reviewedAt": "2026-11-23",
+      "notes": "Revisión propia confirmada para el expediente compuesto y sus variantes."
     }
   }
 }
