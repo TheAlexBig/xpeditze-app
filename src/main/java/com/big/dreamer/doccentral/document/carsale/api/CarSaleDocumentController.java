@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/documents")
+@RequestMapping("/api/v1/documents/car-sale")
 public class CarSaleDocumentController {
     public static final String WORD_CONTENT_TYPE =
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -39,7 +39,7 @@ public class CarSaleDocumentController {
         this.license = license;
     }
 
-    @PostMapping("/car-sale")
+    @PostMapping
     public ResponseEntity<byte[]> generateCarSaleDocument(
             @Valid @RequestBody CarSaleDocumentRequest request,
             @RequestParam(defaultValue = WORD_FORMAT) String format) {
@@ -51,7 +51,7 @@ public class CarSaleDocumentController {
                 () -> render(request, selected), null));
     }
 
-    @PostMapping("/car-sale/history")
+    @PostMapping("/history")
     public ResponseEntity<byte[]> generateTrackedCarSaleDocument(
             @Valid @RequestBody CarSaleGenerationRequest request,
             @RequestParam(defaultValue = WORD_FORMAT) String format) {
