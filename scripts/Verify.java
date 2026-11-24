@@ -23,7 +23,8 @@ final class Verify {
         if (testClasses.length > 0) {
             command.add("-Dtest=" + String.join(",", testClasses));
         }
-        command.add("verify");
+        command.add("test");
+        command.add("spotbugs:check");
 
         Instant startedAt = Instant.now();
         Process process = new ProcessBuilder(command)

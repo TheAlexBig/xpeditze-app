@@ -28,4 +28,4 @@ jobs:
           cache: maven
 
       - name: Run tests and static analysis
-        run: mvn --batch-mode verify
+        run: mvn --batch-mode test spotbugs:check
