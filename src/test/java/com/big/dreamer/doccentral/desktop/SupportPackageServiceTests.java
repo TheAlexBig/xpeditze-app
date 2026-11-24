@@ -23,6 +23,7 @@ class SupportPackageServiceTests {
     Path directory;
 
     @Test
+    @SuppressWarnings("unchecked")
     void includesOnlySanitizedDiagnosticsAndLogs() throws Exception {
         Files.writeString(directory.resolve("xpeditze.log"),
                 "User " + System.getProperty("user.home")

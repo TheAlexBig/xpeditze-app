@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -48,7 +47,7 @@ public class SavedPersonRepository {
     public synchronized List<String> findOccupations() {
         LinkedHashSet<String> occupations = new LinkedHashSet<>();
         findAll().stream()
-                .map(SavedPerson::oficio)
+                .map(person -> person.oficio())
                 .filter(occupation -> occupation != null && !occupation.isBlank())
                 .forEach(occupations::add);
         return List.copyOf(occupations);
@@ -96,7 +95,7 @@ public class SavedPersonRepository {
     private List<SavedPerson> sortByMostRecent(List<SavedPerson> people) {
         return people.stream()
                 .sorted(Comparator.comparing(
-                        SavedPerson::rememberedAt,
+                        person -> person.rememberedAt(),
                         Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
     }

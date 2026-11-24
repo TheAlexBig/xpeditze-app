@@ -55,7 +55,7 @@ class MutualDocumentServiceTests {
         repository.save("purpose.txt", original + " Texto personalizado del destino.");
         try (XWPFDocument word = new XWPFDocument(new ByteArrayInputStream(service.createDocument(request(true))));
              var pdf = Loader.loadPDF(service.createPdfDocument(request(true)))) {
-            assertThat(word.getParagraphs().stream().map(p -> p.getText()).reduce("", String::concat))
+            assertThat(word.getParagraphs().stream().map(p -> p.getText()).reduce("", (left, right) -> left.concat(right)))
                     .contains("Texto personalizado del destino.").doesNotContain(":fundsPurpose");
             assertThat(new PDFTextStripper().getText(pdf).replaceAll("\\s+", " "))
                     .contains("Texto personalizado del destino.").doesNotContain(":fundsPurpose");

@@ -150,7 +150,7 @@ public class MutualDocumentService {
                     Map.entry("monthlyInterest", value(terms.monthlyInterest(), "cero")),
                     Map.entry("defaultInterest", value(terms.defaultInterest(), "cero")))));
         }
-        if (resolution.financialPlan() != null) {
+        if (plan != null) {
             clauses.add(render(templates, "payment-schedule.txt", Map.ofEntries(
                     Map.entry("number", number(clauses.size() + 1)),
                     Map.entry("capital", money(plan.capital())),

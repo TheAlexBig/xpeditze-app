@@ -13,10 +13,8 @@ import org.springframework.stereotype.Repository;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -135,7 +133,7 @@ public class GeneratedDocumentHistoryRepository {
     private List<GeneratedDocumentMetadata> sortByMostRecent(List<GeneratedDocumentMetadata> documents) {
         return documents.stream()
                 .sorted(Comparator.comparing(
-                        GeneratedDocumentMetadata::createdAt,
+                        document -> document.createdAt(),
                         Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
     }

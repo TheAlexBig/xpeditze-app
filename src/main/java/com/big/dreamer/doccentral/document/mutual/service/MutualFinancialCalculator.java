@@ -33,18 +33,18 @@ public class MutualFinancialCalculator {
         LocalDate end = resolveEndDate(terms, start);
         long totalDays = ChronoUnit.DAYS.between(start, end);
         if (totalDays < count) {
-            invalid("condiciones.numero_cuotas_numerico",
+            throw invalid("condiciones.numero_cuotas_numerico",
                     "El número de cuotas no puede superar los días disponibles.");
         }
 
         BigDecimal rate = terms.numericMonthlyInterest() == null ? BigDecimal.ZERO : terms.numericMonthlyInterest();
-        if (rate.signum() < 0) invalid("condiciones.tasa_interes_mensual", "La tasa no puede ser negativa.");
+        if (rate.signum() < 0) throw invalid("condiciones.tasa_interes_mensual", "La tasa no puede ser negativa.");
         BigDecimal months = monthEquivalent(terms, totalDays);
         List<LocalDate> dates = paymentDates(terms, start, end, count, totalDays);
         List<MutualFinancialPlan.Installment> installments = amortize(capital, rate, months, dates);
         BigDecimal total = installments.stream()
-                .map(MutualFinancialPlan.Installment::total)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(installment -> installment.total())
+                .reduce(BigDecimal.ZERO, (left, right) -> left.add(right));
         BigDecimal interest = total.subtract(capital);
         return new MutualFinancialPlan(capital, interest, total, count, periodicity(terms, count),
                 start, end, List.copyOf(installments));
@@ -53,7 +53,7 @@ public class MutualFinancialCalculator {
     private MutualFinancialPlan customPlan(MutualTerms terms, BigDecimal capital, LocalDate start) {
         List<MutualCustomInstallment> custom = terms.customInstallments();
         if (custom == null || custom.isEmpty()) {
-            invalid("condiciones.cuotas_personalizadas", "Agregue al menos una cuota personalizada.");
+            throw invalid("condiciones.cuotas_personalizadas", "Agregue al menos una cuota personalizada.");
         }
         List<MutualFinancialPlan.Installment> installments = new ArrayList<>();
         BigDecimal capitalTotal = BigDecimal.ZERO;
@@ -64,14 +64,14 @@ public class MutualFinancialCalculator {
             LocalDate dueDate = required(item.dueDate(), "condiciones.cuotas_personalizadas",
                     "Todas las cuotas deben tener fecha.");
             if (!dueDate.isAfter(previous)) {
-                invalid("condiciones.cuotas_personalizadas",
+                throw invalid("condiciones.cuotas_personalizadas",
                         "Las fechas de las cuotas deben ser posteriores a la firma y estar en orden.");
             }
             BigDecimal installmentCapital = positive(item.capital(), "condiciones.cuotas_personalizadas",
                     "El capital de cada cuota debe ser mayor que cero.");
             BigDecimal installmentInterest = item.interest() == null ? BigDecimal.ZERO : money(item.interest());
             if (installmentInterest.signum() < 0) {
-                invalid("condiciones.cuotas_personalizadas", "El interés de una cuota no puede ser negativo.");
+                throw invalid("condiciones.cuotas_personalizadas", "El interés de una cuota no puede ser negativo.");
             }
             capitalTotal = capitalTotal.add(installmentCapital);
             interestTotal = interestTotal.add(installmentInterest);
@@ -80,7 +80,7 @@ public class MutualFinancialCalculator {
             previous = dueDate;
         }
         if (money(capitalTotal).compareTo(capital) != 0) {
-            invalid("condiciones.cuotas_personalizadas",
+            throw invalid("condiciones.cuotas_personalizadas",
                     "La suma del capital de las cuotas debe ser igual al monto mutuado.");
         }
         BigDecimal interest = money(interestTotal);
@@ -92,7 +92,7 @@ public class MutualFinancialCalculator {
         MutualTermMode mode = required(terms.termMode(), "condiciones.modalidad_plazo", "Seleccione modalidad de plazo.");
         if (mode == MutualTermMode.SPECIFIC_DATE) {
             LocalDate end = required(terms.dueDateIso(), "condiciones.fecha_vencimiento_iso", "Indique fecha de vencimiento.");
-            if (!end.isAfter(start)) invalid("condiciones.fecha_vencimiento_iso", "Debe ser posterior a la fecha inicial.");
+            if (!end.isAfter(start)) throw invalid("condiciones.fecha_vencimiento_iso", "Debe ser posterior a la fecha inicial.");
             return end;
         }
         int quantity = positive(terms.termQuantity(), "condiciones.cantidad_plazo", "El plazo debe ser mayor que cero.");
@@ -185,21 +185,21 @@ public class MutualFinancialCalculator {
     }
 
     private BigDecimal positive(BigDecimal value, String field, String message) {
-        if (value == null || value.signum() <= 0) invalid(field, message);
+        if (value == null || value.signum() <= 0) throw invalid(field, message);
         return money(value);
     }
 
     private int positive(Integer value, String field, String message) {
-        if (value == null || value <= 0) invalid(field, message);
+        if (value == null || value <= 0) throw invalid(field, message);
         return value;
     }
 
     private <T> T required(T value, String field, String message) {
-        if (value == null) invalid(field, message);
+        if (value == null) throw invalid(field, message);
         return value;
     }
 
-    private void invalid(String field, String message) {
-        throw new CarSaleRequestValidationException("Revise las condiciones del mutuo.", Map.of(field, message));
+    private CarSaleRequestValidationException invalid(String field, String message) {
+        return new CarSaleRequestValidationException("Revise las condiciones del mutuo.", Map.of(field, message));
     }
 }

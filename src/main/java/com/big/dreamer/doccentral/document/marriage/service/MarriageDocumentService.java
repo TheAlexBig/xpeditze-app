@@ -105,7 +105,7 @@ public class MarriageDocumentService {
                 Map.entry("childrenRegistration", request.recognizedChildren().isEmpty()
                         ? "No se reconocieron hijos en el acto."
                         : "Comunicar el reconocimiento de: " + request.recognizedChildren().stream()
-                        .map(RecognizedChild::name).collect(Collectors.joining(", ")) + "."),
+                        .map(child -> child.name()).collect(Collectors.joining(", ")) + "."),
                 Map.entry("postActions", String.join(" ", resolution.postCelebrationActions())));
     }
 
@@ -175,7 +175,7 @@ public class MarriageDocumentService {
     private String children(List<RecognizedChild> children) {
         if (children.isEmpty()) return "Los contrayentes manifiestan que no reconocerán hijos en este acto.";
         return "Los contrayentes reconocen como hijos comunes a "
-                + children.stream().map(RecognizedChild::name).collect(Collectors.joining(", ")) + ".";
+                + children.stream().map(child -> child.name()).collect(Collectors.joining(", ")) + ".";
     }
 
     private String capitulations(MarriageDetails details) {

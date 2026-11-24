@@ -38,7 +38,7 @@ class MarriageRulesServiceTests {
                 party("Femenino", "DIVORCED", LocalDate.of(1990, 1, 1)),
                 party("Masculino", "WIDOWED", LocalDate.of(1990, 1, 1)),
                 witnesses(), details(null), List.of())).issues())
-                .extracting(MarriageRuleResolution.Issue::code)
+                .extracting(issue -> issue.code())
                 .containsExactly("PREVIOUS_MARRIAGE_DOCUMENT", "PREVIOUS_MARRIAGE_DOCUMENT");
     }
 
@@ -63,7 +63,7 @@ class MarriageRulesServiceTests {
                 "", false, true, false, false, false, false, true);
         assertThat(rules.resolve(request(changed, party("Masculino", "SINGLE", LocalDate.of(1990, 1, 1)),
                 witnesses(), details(null), List.of())).issues())
-                .extracting(MarriageRuleResolution.Issue::code).contains("STALE_BIRTH_CERTIFICATE");
+                .extracting(issue -> issue.code()).contains("STALE_BIRTH_CERTIFICATE");
     }
 
     @Test
@@ -75,7 +75,7 @@ class MarriageRulesServiceTests {
                 party("Femenino", "SINGLE", LocalDate.of(1990, 1, 1)),
                 party("Masculino", "SINGLE", LocalDate.of(1990, 1, 1)),
                 List.of(invalid, witnesses().get(1)), details(null), List.of()));
-        assertThat(result.issues()).extracting(MarriageRuleResolution.Issue::code)
+        assertThat(result.issues()).extracting(issue -> issue.code())
                 .contains("UNDERAGE_WITNESS", "WITNESS_LANGUAGE", "WITNESS_KNOWLEDGE",
                         "WITNESS_RELATIONSHIP");
     }
@@ -90,7 +90,7 @@ class MarriageRulesServiceTests {
                 party("Femenino", "SINGLE", LocalDate.of(1990, 1, 1)),
                 party("Masculino", "SINGLE", LocalDate.of(1990, 1, 1)),
                 witnesses(), capitulations, List.of(new RecognizedChild("HIJO COMÚN", ""))));
-        assertThat(result.issues()).extracting(MarriageRuleResolution.Issue::code)
+        assertThat(result.issues()).extracting(issue -> issue.code())
                 .contains("CHILD_BIRTH_CERTIFICATE", "CAPITULATIONS");
     }
 
@@ -103,7 +103,7 @@ class MarriageRulesServiceTests {
         MarriageRuleResolution result = rules.resolve(request(
                 foreign, party("Femenino", "SINGLE", LocalDate.of(1990, 1, 1)),
                 witnesses(), details(null), List.of()));
-        assertThat(result.issues()).extracting(MarriageRuleResolution.Issue::code)
+        assertThat(result.issues()).extracting(issue -> issue.code())
                 .contains("FOREIGN_PARTY", "LANGUAGE", "INTERPRETER");
     }
 
@@ -116,7 +116,7 @@ class MarriageRulesServiceTests {
                         "Femenino", "Abogado"));
 
         assertThat(rules.resolve(withLawyer).issues())
-                .extracting(MarriageRuleResolution.Issue::code)
+                .extracting(issue -> issue.code())
                 .contains("NOTARY_REQUIRED");
     }
 

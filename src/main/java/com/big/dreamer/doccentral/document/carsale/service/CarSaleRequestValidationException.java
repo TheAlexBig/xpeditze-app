@@ -3,6 +3,7 @@ package com.big.dreamer.doccentral.document.carsale.service;
 import java.util.Map;
 
 public class CarSaleRequestValidationException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     private final Map<String, String> fields;
 

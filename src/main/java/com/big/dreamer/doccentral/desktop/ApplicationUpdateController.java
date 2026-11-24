@@ -50,8 +50,8 @@ public class ApplicationUpdateController {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) throw new IOException("GitHub returned " + response.statusCode());
             var json = objectMapper.readTree(response.body());
-            String latest = json.get("tag_name").asText().replaceFirst("^[vV]", "");
-            String url = json.get("html_url").asText(RELEASES_URL);
+            String latest = json.get("tag_name").asString().replaceFirst("^[vV]", "");
+            String url = json.get("html_url").asString(RELEASES_URL);
             return new UpdateStatus(current, latest, compareVersions(latest, current) > 0, url);
         } catch (IOException exception) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,

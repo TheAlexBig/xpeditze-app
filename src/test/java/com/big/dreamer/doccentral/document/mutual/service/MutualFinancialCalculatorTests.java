@@ -18,7 +18,7 @@ class MutualFinancialCalculatorTests {
         MutualFinancialPlan plan = calculator.calculate(terms(LocalDate.of(2026, 1, 1),
                 MutualTermMode.DURATION, 60, MutualTermUnit.DAYS, null, 4, "1000", "2"));
         assertThat(plan.dueDate()).isEqualTo("2026-03-02");
-        assertThat(plan.installments()).extracting(MutualFinancialPlan.Installment::dueDate)
+        assertThat(plan.installments()).extracting(installment -> installment.dueDate())
                 .containsExactly(LocalDate.parse("2026-01-16"), LocalDate.parse("2026-01-31"),
                         LocalDate.parse("2026-02-15"), LocalDate.parse("2026-03-02"));
         assertThat(plan.interest()).isEqualByComparingTo("25.13");
@@ -67,10 +67,10 @@ class MutualFinancialCalculatorTests {
     void supportsSpecificDateAndNonDivisiblePeriodsWithoutDrift() {
         MutualFinancialPlan plan = calculator.calculate(terms(MutualTermMode.SPECIFIC_DATE, null,
                 null, LocalDate.parse("2026-02-10"), 3, "300", "0"));
-        assertThat(plan.installments()).extracting(MutualFinancialPlan.Installment::dueDate)
+        assertThat(plan.installments()).extracting(installment -> installment.dueDate())
                 .containsExactly(LocalDate.parse("2026-02-03"), LocalDate.parse("2026-02-06"),
                         LocalDate.parse("2026-02-10"));
-        assertThat(plan.installments()).extracting(MutualFinancialPlan.Installment::total)
+        assertThat(plan.installments()).extracting(installment -> installment.total())
                 .allSatisfy(value -> assertThat(value).isEqualByComparingTo("100.00"));
     }
 
