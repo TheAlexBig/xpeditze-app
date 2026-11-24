@@ -143,7 +143,11 @@ public class MutualDocumentService {
                 Map.entry("installments", installments),
                 Map.entry("installmentAmount", plan == null
                         ? currency(terms.installmentAmount()) : installmentDescription(plan, terms)),
-                Map.entry("paymentInstructions", paymentInstructions(terms, creditor)))));
+                Map.entry("paymentInstructions", paymentInstructions(terms, creditor)),
+                Map.entry("paymentAccount", value(terms.paymentAccount(), "")),
+                Map.entry("paymentBank", value(terms.paymentBank(), "")),
+                Map.entry("creditorName", creditor.company() == null
+                        ? fullName(creditor) : creditor.company().legalName()))));
         if (!blank(terms.monthlyInterest()) || !blank(terms.defaultInterest())) {
             clauses.add(render(templates, "interest.txt", Map.ofEntries(
                     Map.entry("interestTerms", interestTerms(terms)),

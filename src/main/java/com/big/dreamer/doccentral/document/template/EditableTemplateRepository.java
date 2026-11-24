@@ -96,6 +96,19 @@ public class EditableTemplateRepository {
         return save(name, requireKnown(name).content());
     }
 
+    protected synchronized void migrateDefault(String name, String previousDefault) {
+        Definition definition = requireKnown(name);
+        Path path = directory.resolve(name);
+        try {
+            String current = Files.readString(path, StandardCharsets.UTF_8);
+            if (current.equals(previousDefault)) {
+                LocalJsonFileWriter.write(path, definition.content());
+            }
+        } catch (IOException exception) {
+            throw new DocumentGenerationException("No se pudo actualizar la plantilla predeterminada.", exception);
+        }
+    }
+
     private Definition requireKnown(String name) {
         Definition definition = definitions.get(name);
         if (definition == null) throw new IllegalArgumentException("Plantilla desconocida.");

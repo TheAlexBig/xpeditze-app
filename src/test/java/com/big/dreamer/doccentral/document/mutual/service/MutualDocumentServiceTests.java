@@ -10,9 +10,14 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import com.big.dreamer.doccentral.document.mutual.model.MutualInstrumentType;
 import com.big.dreamer.doccentral.document.mutual.model.MutualGuaranteeType;
 import com.big.dreamer.doccentral.document.mutual.model.MutualTermMode;
@@ -23,7 +28,9 @@ import com.big.dreamer.doccentral.document.mutual.model.MutualPaymentMethod;
 import com.big.dreamer.doccentral.document.mutual.model.MutualPaymentScheduleMode;
 import com.big.dreamer.doccentral.storage.ApplicationDirectories;
 import com.big.dreamer.doccentral.document.mutual.template.MutualTemplateRepository;
+import com.big.dreamer.doccentral.document.history.service.GeneratedDocumentHistoryRepository;
 import com.big.dreamer.doccentral.document.render.LegalDocumentRenderer;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.text.PDFTextStripper;
 
@@ -159,6 +166,52 @@ class MutualDocumentServiceTests {
                         "no se agregará otro interés ordinario")
                 .doesNotContain("Vencimientos:", "1)", "2)", "$", "/2026", "/2027");
         assertThat(content.authentic()).isEmpty();
+    }
+
+    @Test
+    void rendersInterestFreeCalculatedPublicDeedWithPreviousPaymentVariables() throws Exception {
+        MutualTerms terms = new MutualTerms(
+                "MIL QUINIENTOS", "DOCE meses", "VEINTICUATRO DE NOVIEMBRE DE DOS MIL VEINTISIETE",
+                "DOCE", "CIENTO VEINTICINCO", "Davivienda",
+                "UNO DOS TRES CUATRO UNO DOS TRES CINCO CINCO UNO DOS TRES", "", "",
+                "gastos personales o consumo personal", false, "", "",
+                "Ilobasco, Municipio de Cabañas Oeste", "Ilobasco, Municipio de Cabañas Oeste",
+                "Cabañas", "VEINTICUATRO DE NOVIEMBRE DE DOS MIL VEINTISÉIS",
+                "VEINTE HORAS CON TREINTA Y TRES MINUTOS", "Sí", "No",
+                new BigDecimal("1500"), MutualTermMode.DURATION, 12, MutualTermUnit.MONTHS,
+                LocalDate.of(2026, 11, 24), LocalDate.of(2027, 11, 24), 12, BigDecimal.ZERO,
+                MutualInstrumentType.PUBLIC_DEED, MutualGuaranteeType.NONE, 12345,
+                "DOCE MIL TRESCIENTOS CUARENTA Y CINCO", "", MutualPaymentMethod.BANK_TRANSFER,
+                "", MutualInterestPeriod.MONTHLY, MutualPaymentScheduleMode.CALCULATED, List.of(),
+                false, "");
+        MutualDocumentRequest request = new MutualDocumentRequest(
+                new PersonDetails("Luis Angel", "Diaz Andino", "La Libertad",
+                        "Santa Tecla, Municipio de La Libertad Sur", "CERO DOS SEIS OCHO SIETE DOS TRES SIETE-OCHO",
+                        "Masculino", "SESENTA Y UNO", "Ministro Evangelico"),
+                new PersonDetails("Rigoberto", "Marcador", "Sonsonate",
+                        "Nahuizalco, Municipio de Sonsonate Norte", "DOS TRES DOS TRES DOS TRES DOS TRES-DOS",
+                        "Femenino", "CINCUENTA Y NUEVE", "Gamer"),
+                null, null, terms,
+                new LegalAgentDetails("Alex", "Valladares", "Chalatenango",
+                        "Agua Caliente, Municipio de Chalatenango Centro", "Masculino", "Notario"));
+
+        try (InputStream stream = getClass().getClassLoader().getResourceAsStream(
+                "document-templates/mutual/obsolete/payment-v3.txt")) {
+            assertThat(stream).isNotNull();
+            Files.writeString(directory.resolve("data/templates-v2/mutual/payment.txt"),
+                    new String(stream.readAllBytes(), StandardCharsets.UTF_8).stripTrailing()
+                            + " Texto personalizado.",
+                    StandardCharsets.UTF_8);
+        }
+        assertThat(service.createDocument(request)).isNotEmpty();
+
+        ApplicationDirectories historyDirectories = new ApplicationDirectories(
+                directory.resolve("history-data").toString(), directory.resolve("history-documents").toString());
+        historyDirectories.initialize();
+        GeneratedDocumentHistoryRepository history = new GeneratedDocumentHistoryRepository(
+                historyDirectories, new ObjectMapper());
+        history.initialize();
+        history.saveMutual("mutuo.docx", "2026-11-24T02:34:43.458Z", request, Map.of());
     }
 
     @Test
